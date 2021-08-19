@@ -1,0 +1,10 @@
+html, body {
+    background-color: #323238;
+  }
+
+  
+  
+  #scene-container {
+    width: 90vw;
+    height: 90vh;
+  }
