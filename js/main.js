@@ -9,7 +9,7 @@ let renderer;
 let scene;
 let controls;
 
-var modelName = "gltf/empire.glb";
+var modelName = "gltf/house.glb";
 const mixers = [];
 const clock = new THREE.Clock();
 
@@ -38,12 +38,12 @@ function init() {
 }
 
 function createCamera() {
-  const fov = 70;
+  const fov = 85;
   const aspect = container.clientWidth / container.clientHeight;
   const near = 0.01;
   const far = 10000;
   camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-  camera.position.set(0, 0, 12);
+  camera.position.set(0, 0, 16);
 }
 
 function createLights() {
@@ -72,13 +72,13 @@ function loadModels(modelName) {
       const action = mixer.clipAction(animation);
       action.play();
     }
-
+    model.rotateY(0.1);
     scene.add(model);
   };
 
   const onProgress = (progress) => { };
 
-  const modelPosition = new THREE.Vector3(0, 0, 2.5);
+  const modelPosition = new THREE.Vector3(0, 0, 0);
 
   loader.load(
     modelName,
@@ -159,7 +159,7 @@ function createControls() {
     this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
   
     // Set to false to disable use of the keys
-    this.enableKeys = false;
+    this.enableKeys = true;
   
     // The four arrow keys
     this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
