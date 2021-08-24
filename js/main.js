@@ -23,7 +23,7 @@ function init() {
 
   // Creating the scene
   scene = new THREE.Scene();
-  scene.background = new THREE.Color("#323238");
+  scene.background = new THREE.Color('#51dbf7'); //("#323238");
 
   createCamera();
   createLights();
@@ -38,7 +38,7 @@ function init() {
 }
 
 function createCamera() {
-  const fov = 85;
+  const fov = 88;
   const aspect = container.clientWidth / container.clientHeight;
   const near = 0.01;
   const far = 10000;
@@ -50,8 +50,13 @@ function createLights() {
   const mainLight = new THREE.DirectionalLight(0xffffff, 3);
   mainLight.position.set(-1, 10, -18);
 
+  const mainLight2 = new THREE.DirectionalLight(0xffffff, 1);
+  mainLight2.position.set(1, 10, -18);
+  mainLight2.rotateY(2);
+
   const hemisphereLight = new THREE.HemisphereLight(0xddeeff, 0x202020, 5);
-  scene.add(mainLight, hemisphereLight);
+  scene.add(mainLight, mainLight2, hemisphereLight);
+
 }
 
 function loadModels(modelName) {
