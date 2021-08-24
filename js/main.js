@@ -151,7 +151,7 @@ function createControls() {
     this.enablePan = true;
     this.panSpeed = 1.0;
     this.screenSpacePanning = true; // if false, pan orthogonal to world-space direction camera.up
-    this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
+    this.keyPanSpeed = 2.0;	// pixels moved per arrow key push
   
     // Set to true to automatically rotate around the target
     // If auto-rotate is enabled, you must call controls.update() in your animation loop
@@ -1021,6 +1021,12 @@ function createControls() {
     }
   
     function onMouseWheel( event ) {
+      if ( event.deltaY > 0 ) {
+        pan( 0, - scope.keyPanSpeed );
+      }else{
+        pan( 0, scope.keyPanSpeed );
+      }
+      scope.update();
   
       if ( scope.enabled === false || scope.enableZoom === false || ( state !== STATE.NONE && state !== STATE.ROTATE ) ) return;
   
