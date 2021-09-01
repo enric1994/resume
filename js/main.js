@@ -28,6 +28,7 @@ function init() {
   createCamera();
   createLights();
   loadModels(modelName);
+  loadModels('gltf/monkey.glb');
   createControls();
   createRenderer();
 
@@ -77,8 +78,10 @@ function loadModels(modelName) {
       const action = mixer.clipAction(animation);
       action.play();
     }
-    model.rotateY(0.1);
+    // model.rotateY(0.1);
     scene.add(model);
+    // model.callback = function() { console.log( 'model!' ); }
+
   };
 
   const onProgress = (progress) => { };
@@ -92,6 +95,22 @@ function loadModels(modelName) {
   );
 
 }
+// 
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+function onDocumentMouseDown( event ) {
+event.preventDefault();
+mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
+mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+raycaster.setFromCamera( mouse, camera );
+// console.log(scene.children);
+var intersects = raycaster.intersectObjects( scene.children );
+console.log(intersects);
+if ( intersects.length > 0 ) {
+    intersects[1].object.callback();
+}}
+window.addEventListener('click', onDocumentMouseDown, false);
+
 
 function createRenderer() {
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -156,7 +175,7 @@ function createControls() {
     this.enablePan = true;
     this.panSpeed = 1.0;
     this.screenSpacePanning = true; // if false, pan orthogonal to world-space direction camera.up
-    this.keyPanSpeed = 2.0;	// pixels moved per arrow key push
+    this.keyPanSpeed = 4.0;	// pixels moved per arrow key push
   
     // Set to true to automatically rotate around the target
     // If auto-rotate is enabled, you must call controls.update() in your animation loop
