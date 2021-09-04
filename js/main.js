@@ -8,6 +8,7 @@ let camera;
 let renderer;
 let scene;
 let controls;
+let model;
 
 var modelName = "gltf/house.glb";
 const mixers = [];
@@ -28,7 +29,7 @@ function init() {
   createCamera();
   createLights();
   loadModels(modelName);
-  loadModels('gltf/monkey.glb');
+  // loadModels('gltf/me1.glb');
   createControls();
   createRenderer();
 
@@ -64,7 +65,7 @@ function loadModels(modelName) {
   const loader = new GLTFLoader();
 
   const onLoad = (result, position) => {
-    const model = result.scene;
+    model = result.scene;
     // model.position.copy(position);
     model.scale.set(3, 3, 3);
 
@@ -95,21 +96,6 @@ function loadModels(modelName) {
   );
 
 }
-// 
-var raycaster = new THREE.Raycaster();
-var mouse = new THREE.Vector2();
-function onDocumentMouseDown( event ) {
-event.preventDefault();
-mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
-mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
-raycaster.setFromCamera( mouse, camera );
-// console.log(scene.children);
-var intersects = raycaster.intersectObjects( scene.children );
-console.log(intersects);
-if ( intersects.length > 0 ) {
-    intersects[1].object.callback();
-}}
-window.addEventListener('click', onDocumentMouseDown, false);
 
 
 function createRenderer() {
@@ -1283,10 +1269,12 @@ function createControls() {
 function update() {
   const delta = clock.getDelta();
   mixers.forEach((mixer) => mixer.update(delta));
+  
 }
 
 function render() {
   renderer.render(scene, camera);
+  if (model)model.rotation.y=camera.position.y * 0.05;
 }
 
 init();
