@@ -24,7 +24,7 @@ function init() {
 
   // Creating the scene
   scene = new THREE.Scene();
-  scene.background = new THREE.Color('#51dbf7'); //("#323238");
+  scene.background = new THREE.Color('#fffff'); //("#323238");
 
   createCamera();
   createLights();
@@ -40,12 +40,12 @@ function init() {
 }
 
 function createCamera() {
-  const fov = 88;
+  const fov = 40;
   const aspect = container.clientWidth / container.clientHeight;
   const near = 0.01;
   const far = 10000;
   camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-  camera.position.set(0, 0, 16);
+  camera.position.set(0, -5, 70);
 }
 
 function createLights() {
@@ -1274,7 +1274,7 @@ function update() {
 
 function render() {
   renderer.render(scene, camera);
-  if (model)model.rotation.y=camera.position.y * 0.05;
+  if (model)model.rotation.y=camera.position.y * 0.25 + 1;
 }
 
 init();
