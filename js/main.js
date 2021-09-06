@@ -56,24 +56,37 @@ function createLights() {
 
   const hemisphereLight = new THREE.HemisphereLight(0xddeeff, 0x202020, 5);
 
-  const ambientLight = new THREE.AmbientLight( 0x404040, 5 );
+  const spotLight = new THREE.SpotLight( 0xffffff, 70 );
+            spotLight.position.set( 0, 0, 0 );
+            spotLight.castShadow = true;
+            spotLight.shadow.bias = -0.0005;
 
-  const pointLight = new THREE.PointLight(0xffffff, 15);
-  pointLight.position.set(5,-5,5)
+
+
+
+  const ambientLight = new THREE.AmbientLight( 0x404040, 3 );
+
+  const pointLight = new THREE.PointLight(0xffffff, 5);
+  pointLight.position.set(0,-4,4)
   pointLight.castShadow = true;
-  pointLight.shadow.radius = 1;
+  pointLight.shadow.bias = -0.0005;
+  // pointLight.shadow.radius = 1;
   // mainLight, mainLight2, hemisphereLight,
-  scene.add(pointLight, ambientLight);
+  scene.add(ambientLight,pointLight);
+
+
 
 }
 
 function loadModels(modelName) {
   const loader = new GLTFLoader();
 
-  const onLoad = (result, position) => {
+  const onLoad = (result) => {
     model = result.scene;
     // model.position.copy(position);
     model.scale.set(3, 3, 3);
+    model.traverse( function( node ) { if ( node instanceof THREE.Mesh ) { node.castShadow = true; node.receiveShadow = true;} } );
+
 
     model.castShadow = true
     const mixer = new THREE.AnimationMixer(model);
@@ -96,7 +109,7 @@ function loadModels(modelName) {
 
   loader.load(
     modelName,
-    (gltf) => onLoad(gltf, modelPosition),
+    (gltf) => onLoad(gltf),
     onProgress
   );
   
@@ -108,6 +121,7 @@ function createRenderer() {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(1);
+  renderer.shadowMap.enabled = true
   // console.log(window.devicePixelRatio);
   renderer.gammaFactor = 2.2;
   // renderer.gammaOutput = true;
