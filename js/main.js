@@ -43,36 +43,25 @@ function createCamera() {
   const near = 0.01;
   const far = 10000;
   camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-  camera.position.set(0, -5, 70);
+  camera.position.set(0, 10, 70);
 }
 
 function createLights() {
-  const mainLight = new THREE.DirectionalLight(0xffffff, 3);
-  mainLight.position.set(-1, 10, -18);
 
-  const mainLight2 = new THREE.DirectionalLight(0xffffff, 1);
-  mainLight2.position.set(1, 10, -18);
-  mainLight2.rotateY(2);
-
-  const hemisphereLight = new THREE.HemisphereLight(0xddeeff, 0x202020, 5);
-
-  const spotLight = new THREE.SpotLight( 0xffffff, 70 );
-            spotLight.position.set( 0, 0, 0 );
+  const spotLight = new THREE.SpotLight( 0xe884e6, 10 );
+            spotLight.position.set( 0, 10, 10 );
             spotLight.castShadow = true;
             spotLight.shadow.bias = -0.0005;
+  
+            const directional = new THREE.DirectionalLight( 0xffffff, 0 );
+            directional.position.set(-10,10,10)
+            // spotLight.position.set( 0, 10, 10 );
+            // spotLight.castShadow = true;
+            // spotLight.shadow.bias = -0.0005;
 
+  const ambientLight = new THREE.AmbientLight( 0xffffff, 3 );
 
-
-
-  const ambientLight = new THREE.AmbientLight( 0x404040, 3 );
-
-  const pointLight = new THREE.PointLight(0xffffff, 5);
-  pointLight.position.set(0,-4,4)
-  pointLight.castShadow = true;
-  pointLight.shadow.bias = -0.0005;
-  // pointLight.shadow.radius = 1;
-  // mainLight, mainLight2, hemisphereLight,
-  scene.add(ambientLight,pointLight);
+  scene.add(ambientLight,spotLight, directional);
 
 
 
@@ -83,8 +72,8 @@ function loadModels(modelName) {
 
   const onLoad = (result) => {
     model = result.scene;
-    // model.position.copy(position);
-    model.scale.set(3, 3, 3);
+    // model.position(0,0,0);
+    model.scale.set(5, 5, 5);
     model.traverse( function( node ) { if ( node instanceof THREE.Mesh ) { node.castShadow = true; node.receiveShadow = true;} } );
 
 
@@ -121,6 +110,7 @@ function createRenderer() {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(1);
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
   renderer.shadowMap.enabled = true
   // console.log(window.devicePixelRatio);
   renderer.gammaFactor = 2.2;
@@ -1300,7 +1290,9 @@ function render() {
   renderRequested = false;
 
   renderer.render(scene, camera);
-  if (model)model.rotation.y=camera.position.y * 0.25 + 1;
+  if (model){
+    model.rotation.y=camera.position.y * 0.25 + 3.8;
+  }
 }
 
 function requestRenderIfNotRequested() {
@@ -1308,11 +1300,11 @@ function requestRenderIfNotRequested() {
     renderRequested = true;
     // function animate() {
 
-      setTimeout( function() {
+      // setTimeout( function() {
   
           requestAnimationFrame( render );
   
-      }, 1000 / 1 );
+      // }, 1000 / 1 );
   
   }
 }
