@@ -1,5 +1,4 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/build/three.module.js';
-// import { OrbitControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/loaders/GLTFLoader.js';
 
 
@@ -9,6 +8,7 @@ let renderer;
 let scene;
 let controls;
 let model;
+let renderRequested;
 
 var modelName = "gltf/house.glb";
 const mixers = [];
@@ -19,28 +19,26 @@ function init() {
 
 
   container = document.querySelector("#scene-container");
-  // renderer.setSize($(container).width(), $(container).height());
-  // container.appendChild(renderer.domElement);
 
-  // Creating the scene
   scene = new THREE.Scene();
-  scene.background = new THREE.Color('#fffff'); //("#323238");
+  scene.background = new THREE.Color('#ccffff'); //("#323238");
 
   createCamera();
   createLights();
   loadModels(modelName);
-  // loadModels('gltf/me1.glb');
   createControls();
   createRenderer();
 
+  
+
   renderer.setAnimationLoop(() => {
     update();
-    render();
+    requestRenderIfNotRequested();
   });
 }
 
 function createCamera() {
-  const fov = 40;
+  const fov = 35;
   const aspect = container.clientWidth / container.clientHeight;
   const near = 0.01;
   const far = 10000;
@@ -57,7 +55,15 @@ function createLights() {
   mainLight2.rotateY(2);
 
   const hemisphereLight = new THREE.HemisphereLight(0xddeeff, 0x202020, 5);
-  scene.add(mainLight, mainLight2, hemisphereLight);
+
+  const ambientLight = new THREE.AmbientLight( 0x404040, 5 );
+
+  const pointLight = new THREE.PointLight(0xffffff, 15);
+  pointLight.position.set(5,-5,5)
+  pointLight.castShadow = true;
+  pointLight.shadow.radius = 1;
+  // mainLight, mainLight2, hemisphereLight,
+  scene.add(pointLight, ambientLight);
 
 }
 
@@ -69,6 +75,7 @@ function loadModels(modelName) {
     // model.position.copy(position);
     model.scale.set(3, 3, 3);
 
+    model.castShadow = true
     const mixer = new THREE.AnimationMixer(model);
     mixers.push(mixer);
 
@@ -79,9 +86,7 @@ function loadModels(modelName) {
       const action = mixer.clipAction(animation);
       action.play();
     }
-    // model.rotateY(0.1);
     scene.add(model);
-    // model.callback = function() { console.log( 'model!' ); }
 
   };
 
@@ -94,6 +99,7 @@ function loadModels(modelName) {
     (gltf) => onLoad(gltf, modelPosition),
     onProgress
   );
+  
 
 }
 
@@ -101,7 +107,8 @@ function loadModels(modelName) {
 function createRenderer() {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setPixelRatio(1);
+  // console.log(window.devicePixelRatio);
   renderer.gammaFactor = 2.2;
   // renderer.gammaOutput = true;
   renderer.physicallyCorrectLights = true;
@@ -1253,6 +1260,8 @@ function createControls() {
   OrbitControls.prototype.constructor = OrbitControls;
 
   controls = new OrbitControls( camera, container );
+  // controls.addEventListener( 'change', render );
+
 
   // controls.enableZoom = false;
   // // controls.maxPolarAngle = 0.95;
@@ -1272,17 +1281,34 @@ function update() {
   
 }
 
+
 function render() {
+  renderRequested = false;
+
   renderer.render(scene, camera);
   if (model)model.rotation.y=camera.position.y * 0.25 + 1;
 }
 
+function requestRenderIfNotRequested() {
+  if (!renderRequested) {
+    renderRequested = true;
+    // function animate() {
+
+      setTimeout( function() {
+  
+          requestAnimationFrame( render );
+  
+      }, 1000 / 1 );
+  
+  }
+}
+
 init();
+
 
 function onWindowResize() {
   camera.aspect = container.clientWidth / container.clientHeight;
 
-  // Update camera frustum
   camera.updateProjectionMatrix();
 
   renderer.setSize(container.clientWidth, container.clientHeight);
