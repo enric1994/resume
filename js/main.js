@@ -1,6 +1,8 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/build/three.module.js';
 import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/loaders/GLTFLoader.js';
 
+const PAN_TOUCH_ROTATE = 0.01;
+const PAN_MOUSE_ROTATE = 0.01;
 
 let container;
 let camera;
@@ -855,6 +857,7 @@ function createControls() {
       panDelta.subVectors( panEnd, panStart ).multiplyScalar( scope.panSpeed );
   
       pan( panDelta.x, panDelta.y );
+      rotateLeft(panDelta.y * PAN_TOUCH_ROTATE);
   
       panStart.copy( panEnd );
   
@@ -1067,8 +1070,11 @@ function createControls() {
     function onMouseWheel( event ) {
       if ( event.deltaY > 0 ) {
         pan( 0, - scope.keyPanSpeed );
+        rotateLeft(-scope.keyPanSpeed * PAN_MOUSE_ROTATE);
+        
       }else{
         pan( 0, scope.keyPanSpeed );
+        rotateLeft(scope.keyPanSpeed * PAN_MOUSE_ROTATE);
       }
       scope.update();
   
@@ -1313,31 +1319,6 @@ function render() {
   renderRequested = false;
 
   renderer.render(scene, camera);
-  if (model){
-    // cube.position.set(model.position.x+5,model.position.y+5,model.position.z+5)
-    model.rotation.y=camera.position.y * 0.25 + 3.8;
-    directional.rotateOnAxis((0,1,0), model.rotation.y);
-
-    // directional.position.set(cube.position.x, cube.position.y,cube.position.z);
-   
-  }
-}
-
-function rotateAboutPoint(obj, point, axis, theta, pointIsWorld){
-  pointIsWorld = (pointIsWorld === undefined)? false : pointIsWorld;
-
-  if(pointIsWorld){
-      obj.parent.localToWorld(obj.position); // compensate for world coordinate
-  }
-
-  obj.position.sub(point); // remove the offset
-  obj.position.applyAxisAngle(axis, theta); // rotate the POSITION
-  obj.position.add(point); // re-add the offset
-  if(pointIsWorld){
-      obj.parent.worldToLocal(obj.position); // undo world coordinates compensation
-  }
-
-  obj.rotateOnAxis(axis, theta); // rotate the OBJECT
 }
 
 function requestRenderIfNotRequested() {
