@@ -9,6 +9,8 @@ let scene;
 let controls;
 let model;
 let renderRequested;
+let directional;
+let cube;
 
 var modelName = "gltf/house.glb";
 const mixers = [];
@@ -21,15 +23,13 @@ function init() {
   container = document.querySelector("#scene-container");
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color('#ccffff'); //("#323238");
+  scene.background = new THREE.Color('#76d1f2'); //("#323238");
 
   createCamera();
-  createLights();
   loadModels(modelName);
+  createLights();
   createControls();
   createRenderer();
-
-  
 
   renderer.setAnimationLoop(() => {
     update();
@@ -48,20 +48,32 @@ function createCamera() {
 
 function createLights() {
 
-  const spotLight = new THREE.SpotLight( 0xe884e6, 10 );
-            spotLight.position.set( 0, 10, 10 );
-            spotLight.castShadow = true;
-            spotLight.shadow.bias = -0.0005;
+//   const light = new THREE.DirectionalLight( 0xFFFFFF );
+// const helper = new THREE.DirectionalLightHelper( light, 5 );
+// scene.add( helper );
+
+  directional = new THREE.DirectionalLight( 0xe884e6, 5 );
+  directional.position.set( 10, 10, 10 );
+  // directional.rotation.set(2,2,2);
+  directional.castShadow = true;
+  directional.shadow.bias = -0.0005;
   
-            const directional = new THREE.DirectionalLight( 0xffffff, 0 );
-            directional.position.set(-10,10,10)
+  // directional.target=model
+  // directional.target.updateMatrixWorld();
+
+  
+            // const point = new THREE.PointLight( 0xffffff, 2 );
+            // point.position.set(5,10,-5);
             // spotLight.position.set( 0, 10, 10 );
             // spotLight.castShadow = true;
             // spotLight.shadow.bias = -0.0005;
+  
+            const helper = new THREE.DirectionalLightHelper( directional, 10 );
+scene.add( directional );
 
-  const ambientLight = new THREE.AmbientLight( 0xffffff, 3 );
+  const ambientLight = new THREE.AmbientLight( 0xffffff, 2 );
 
-  scene.add(ambientLight,spotLight, directional);
+  scene.add(ambientLight);
 
 
 
@@ -90,6 +102,13 @@ function loadModels(modelName) {
     }
     scene.add(model);
 
+//     // Test cube
+//     const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+//     const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+//     cube = new THREE.Mesh( geometry, material );
+//     cube.position.set(10,10,10)
+// scene.add( cube );
+
   };
 
   const onProgress = (progress) => { };
@@ -109,12 +128,16 @@ function loadModels(modelName) {
 function createRenderer() {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(1);
+  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+  renderer.shadowMapSoft = true;
+
+  renderer.shadowMapDarkness = 300;
+
   renderer.shadowMap.enabled = true
   // console.log(window.devicePixelRatio);
   renderer.gammaFactor = 2.2;
-  // renderer.gammaOutput = true;
+  renderer.gammaOutput = true;
   renderer.physicallyCorrectLights = true;
 
   container.appendChild(renderer.domElement);
@@ -1291,8 +1314,30 @@ function render() {
 
   renderer.render(scene, camera);
   if (model){
+    // cube.position.set(model.position.x+5,model.position.y+5,model.position.z+5)
     model.rotation.y=camera.position.y * 0.25 + 3.8;
+    directional.rotateOnAxis((0,1,0), model.rotation.y);
+
+    // directional.position.set(cube.position.x, cube.position.y,cube.position.z);
+   
   }
+}
+
+function rotateAboutPoint(obj, point, axis, theta, pointIsWorld){
+  pointIsWorld = (pointIsWorld === undefined)? false : pointIsWorld;
+
+  if(pointIsWorld){
+      obj.parent.localToWorld(obj.position); // compensate for world coordinate
+  }
+
+  obj.position.sub(point); // remove the offset
+  obj.position.applyAxisAngle(axis, theta); // rotate the POSITION
+  obj.position.add(point); // re-add the offset
+  if(pointIsWorld){
+      obj.parent.worldToLocal(obj.position); // undo world coordinates compensation
+  }
+
+  obj.rotateOnAxis(axis, theta); // rotate the OBJECT
 }
 
 function requestRenderIfNotRequested() {
