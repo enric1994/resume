@@ -1,8 +1,8 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/build/three.module.js';
 import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/loaders/GLTFLoader.js';
 
-const PAN_TOUCH_ROTATE = 0.01;
-const PAN_MOUSE_ROTATE = 0.01;
+const PAN_TOUCH_ROTATE = 0.0063;
+const PAN_MOUSE_ROTATE = 0.0063;
 
 let container;
 let camera;
@@ -11,10 +11,8 @@ let scene;
 let controls;
 let model;
 let renderRequested;
-let directional;
-let cube;
 
-var modelName = "gltf/house.glb";
+var modelName = "gltf/model.glb";
 const mixers = [];
 const clock = new THREE.Clock();
 
@@ -34,18 +32,18 @@ function init() {
   createRenderer();
 
   renderer.setAnimationLoop(() => {
-    update();
+    // update();
     requestRenderIfNotRequested();
   });
 }
 
 function createCamera() {
-  const fov = 35;
+  const fov = 20;
   const aspect = container.clientWidth / container.clientHeight;
   const near = 0.01;
   const far = 10000;
   camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-  camera.position.set(0, 10, 70);
+  camera.position.set(0, 10, 160);
 }
 
 function createLights() {
@@ -54,11 +52,17 @@ function createLights() {
 // const helper = new THREE.DirectionalLightHelper( light, 5 );
 // scene.add( helper );
 
-  directional = new THREE.DirectionalLight( 0xe884e6, 5 );
-  directional.position.set( 10, 10, 10 );
+  const directional1 = new THREE.DirectionalLight( 0xffffff, 5 );
+  directional1.position.set( 10, 10, 10 );
   // directional.rotation.set(2,2,2);
-  directional.castShadow = true;
-  directional.shadow.bias = -0.0005;
+  directional1.castShadow = true;
+  directional1.shadow.bias = -0.0005;
+
+  const directional2 = new THREE.DirectionalLight( 0xffffff, 5 );
+  directional2.position.set( -10, 0, -10 );
+  // directional.rotation.set(2,2,2);
+  directional2.castShadow = true;
+  directional2.shadow.bias = -0.0005;
   
   // directional.target=model
   // directional.target.updateMatrixWorld();
@@ -70,8 +74,8 @@ function createLights() {
             // spotLight.castShadow = true;
             // spotLight.shadow.bias = -0.0005;
   
-            const helper = new THREE.DirectionalLightHelper( directional, 10 );
-scene.add( directional );
+            // const helper = new THREE.DirectionalLightHelper( directional, 10 );
+scene.add( directional1, directional2 );
 
   const ambientLight = new THREE.AmbientLight( 0xffffff, 2 );
 
@@ -86,7 +90,7 @@ function loadModels(modelName) {
 
   const onLoad = (result) => {
     model = result.scene;
-    // model.position(0,0,0);
+    model.position.set(0,0,0);
     model.scale.set(5, 5, 5);
     model.traverse( function( node ) { if ( node instanceof THREE.Mesh ) { node.castShadow = true; node.receiveShadow = true;} } );
 
@@ -103,13 +107,6 @@ function loadModels(modelName) {
       action.play();
     }
     scene.add(model);
-
-//     // Test cube
-//     const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-//     const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-//     cube = new THREE.Mesh( geometry, material );
-//     cube.position.set(10,10,10)
-// scene.add( cube );
 
   };
 
@@ -129,10 +126,12 @@ function loadModels(modelName) {
 
 function createRenderer() {
   renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.stencil = false;
   renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setPixelRatio(2); //(window.devicePixelRatio);
   renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
   renderer.shadowMapSoft = true;
+  renderer.powerPreference = "high-performance";
 
   renderer.shadowMapDarkness = 300;
 
@@ -1291,10 +1290,10 @@ function createControls() {
   
   OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
   OrbitControls.prototype.constructor = OrbitControls;
-
+  
+  
   controls = new OrbitControls( camera, container );
-  // controls.addEventListener( 'change', render );
-
+  controls.addEventListener( 'change', requestRenderIfNotRequested );
 
   // controls.enableZoom = false;
   // // controls.maxPolarAngle = 0.95;
@@ -1324,13 +1323,12 @@ function render() {
 function requestRenderIfNotRequested() {
   if (!renderRequested) {
     renderRequested = true;
-    // function animate() {
 
-      // setTimeout( function() {
+      setTimeout( function() {
   
           requestAnimationFrame( render );
   
-      // }, 1000 / 1 );
+      }, 1000 / 20 );
   
   }
 }
