@@ -1,8 +1,9 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/build/three.module.js';
 import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/loaders/GLTFLoader.js';
 
-const PAN_TOUCH_ROTATE = 0.0063;
-const PAN_MOUSE_ROTATE = 0.0063;
+
+let PAN_TOUCH_ROTATE;
+let PAN_MOUSE_ROTATE
 
 let container;
 let camera;
@@ -22,8 +23,12 @@ function init() {
 
   container = document.querySelector("#scene-container");
 
+  // TODO: adapt to phone height/width
+  PAN_TOUCH_ROTATE = 4.2/container.clientHeight;
+  PAN_MOUSE_ROTATE = 4.2/container.clientHeight;
+
   scene = new THREE.Scene();
-  scene.background = new THREE.Color('#76d1f2'); //("#323238");
+  scene.background = new THREE.Color('#ffffff'); //("#323238");
 
   createCamera();
   loadModels(modelName);
