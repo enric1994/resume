@@ -37,7 +37,7 @@ function init() {
   createRenderer();
 
   renderer.setAnimationLoop(() => {
-    // update();
+    update();
     requestRenderIfNotRequested();
   });
 }
