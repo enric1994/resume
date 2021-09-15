@@ -28,7 +28,7 @@ function init() {
   PAN_MOUSE_ROTATE = 4.2/container.clientHeight;
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color('#ffffff'); //("#323238");
+  scene.background = new THREE.Color('#16ccff'); //("#323238");
 
   createCamera();
   loadModels(modelName);
@@ -53,38 +53,60 @@ function createCamera() {
 
 function createLights() {
 
-//   const light = new THREE.DirectionalLight( 0xFFFFFF );
-// const helper = new THREE.DirectionalLightHelper( light, 5 );
-// scene.add( helper );
+  // Ambient light
+  const ambientLight = new THREE.AmbientLight( 0xffffff, 1 );
 
-  const directional1 = new THREE.DirectionalLight( 0xffffff, 5 );
-  directional1.position.set( 10, 10, 10 );
+  // Hemi light
+  const hemiLight = new THREE.HemisphereLight( 0x0000ff, 0x00ff00, 1.5 );
+
+  // Directional light L1 
+  const dir1 = new THREE.DirectionalLight( 0xf2a2ea, 4 );
+  dir1.position.set( 10, 10, 10 );
+
+  // Directional light 2 
+  const dir2 = new THREE.DirectionalLight( 0x9aedf9, 2 );
+  dir2.position.set( -10, -50, -10 );
+
+  // // dirL1.castShadow = true;
+  // // dirL1.shadow.bias = -0.0005;
+  
+  // // const emptyL1 = new THREE.Object3D()
+  // // emptyL1.position.set(0,-50,0);
+
+  // // dirL1.target = emptyL1;
+  // // dirL1.target.updateMatrixWorld();
+
+  // const dirL1helper = new THREE.DirectionalLightHelper( dirL1, 3 );
+
+// Point light L0
+  const pointL0 = new THREE.PointLight(0xffffff, 10, 0 );
+  pointL0.position.set( 10, -23, 0 );
   // directional.rotation.set(2,2,2);
-  directional1.castShadow = true;
-  directional1.shadow.bias = -0.0005;
+  pointL0.castShadow = true;
+  pointL0.shadow.bias = -0.0005;
 
-  const directional2 = new THREE.DirectionalLight( 0xffffff, 5 );
-  directional2.position.set( -10, 0, -10 );
-  // directional.rotation.set(2,2,2);
-  directional2.castShadow = true;
-  directional2.shadow.bias = -0.0005;
-  
-  // directional.target=model
-  // directional.target.updateMatrixWorld();
+  const helperPointL0 = new THREE.PointLightHelper( pointL0, 2 );
 
   
-            // const point = new THREE.PointLight( 0xffffff, 2 );
-            // point.position.set(5,10,-5);
-            // spotLight.position.set( 0, 10, 10 );
-            // spotLight.castShadow = true;
-            // spotLight.shadow.bias = -0.0005;
-  
-            // const helper = new THREE.DirectionalLightHelper( directional, 10 );
-scene.add( directional1, directional2 );
-
-  const ambientLight = new THREE.AmbientLight( 0xffffff, 2 );
 
   scene.add(ambientLight);
+  scene.add(hemiLight);
+  scene.add( dir1 );
+  scene.add( dir2 );
+  
+  scene.add( helperPointL0, pointL0 );
+  
+
+
+
+  // const directional2 = new THREE.DirectionalLight( 0xffffff, 5 );
+  // directional2.position.set( -10, 0, -10 );
+  // // directional.rotation.set(2,2,2);
+  // directional2.castShadow = true;
+  // directional2.shadow.bias = -0.0005;
+  
+
+
 
 
 
