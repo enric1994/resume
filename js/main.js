@@ -59,13 +59,13 @@ function createLights() {
   // Hemi light
   const hemiLight = new THREE.HemisphereLight( 0x0000ff, 0x00ff00, 1.5 );
 
-  // Directional light L1 
+  // Directional light L1 (yellow)
   const dir1 = new THREE.DirectionalLight( 0xf2a2ea, 4 );
-  dir1.position.set( 10, 10, 10 );
+  dir1.position.set( 10, 20, 10 );
 
-  // Directional light 2 
-  const dir2 = new THREE.DirectionalLight( 0x9aedf9, 2 );
-  dir2.position.set( -10, -50, -10 );
+  // Directional light 2 (pink)
+  const dir2 = new THREE.DirectionalLight( 0xf2a2ea, 2 );
+  dir2.position.set( -10, -20, -10 );
 
   // // dirL1.castShadow = true;
   // // dirL1.shadow.bias = -0.0005;
