@@ -28,7 +28,10 @@ function init() {
   PAN_MOUSE_ROTATE = 4.2/container.clientHeight;
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color('#16ccff'); //("#323238");
+  scene.background = new THREE.Color('#c1ebf2'); //("#323238");
+  // scene.fog = new THREE.Fog(0xd5f8f8, 100, 300);
+  scene.fog = new THREE.Fog(0xd5f8f8, 170, 250);
+
 
   createCamera();
   loadModels(modelName);
@@ -57,60 +60,54 @@ function createLights() {
   const ambientLight = new THREE.AmbientLight( 0xffffff, 1 );
 
   // Hemi light
-  const hemiLight = new THREE.HemisphereLight( 0x0000ff, 0x00ff00, 1.5 );
+  const hemiLight = new THREE.HemisphereLight( 'white', 'orange', .7 );
 
-  // Directional light L1 (yellow)
-  const dir1 = new THREE.DirectionalLight( 0xf2a2ea, 4 );
-  dir1.position.set( 10, 20, 10 );
+  // Directional light 1
+  const dir1 = new THREE.DirectionalLight( 'white', 1.5 );
+  dir1.position.set( 10, 10, 10 );
 
-  // Directional light 2 (pink)
-  const dir2 = new THREE.DirectionalLight( 0xf2a2ea, 2 );
-  dir2.position.set( -10, -20, -10 );
+  // Directional light 2 
+  const dir2 = new THREE.DirectionalLight( 'white', 1 );
+  dir2.position.set( -10, 0, 10 );
 
-  // // dirL1.castShadow = true;
-  // // dirL1.shadow.bias = -0.0005;
+  // Directional light 3
+  const dir3 = new THREE.DirectionalLight( 'white', 1.5 );
+  dir3.position.set( 10, 30, -10 );
+
+  //Set up shadow properties for the light
+dir3.shadow.mapSize.width = 512; 
+dir3.shadow.mapSize.height = 512; 
+dir3.shadow.camera.near = 0.5; 
+dir3.shadow.camera.far = 500; 
+
+// dir3.shadow.camera.width = 30;
+// dir3.shadow.camera.height = 500;
+
+dir3.shadow.camera.top = 30;
+dir3.shadow.camera.bottom = -30;
+dir3.shadow.camera.left = 30;
+dir3.shadow.camera.right = -30;
   
-  // // const emptyL1 = new THREE.Object3D()
-  // // emptyL1.position.set(0,-50,0);
 
-  // // dirL1.target = emptyL1;
-  // // dirL1.target.updateMatrixWorld();
-
-  // const dirL1helper = new THREE.DirectionalLightHelper( dirL1, 3 );
-
-// Point light L0
-  const pointL0 = new THREE.PointLight(0xffffff, 10, 0 );
-  pointL0.position.set( 10, -23, 0 );
-  // directional.rotation.set(2,2,2);
-  pointL0.castShadow = true;
-  pointL0.shadow.bias = -0.0005;
-
-  const helperPointL0 = new THREE.PointLightHelper( pointL0, 2 );
-
+  dir3.castShadow = true;
+  dir3.shadow.bias = -0.0005;
   
+  const dir3Helper = new THREE.DirectionalLightHelper( dir3, 3 );
 
   scene.add(ambientLight);
   scene.add(hemiLight);
   scene.add( dir1 );
   scene.add( dir2 );
+  scene.add( dir3 );
+  // scene.add(dir3Helper);
   
-  scene.add( helperPointL0, pointL0 );
-  
-
-
-
-  // const directional2 = new THREE.DirectionalLight( 0xffffff, 5 );
-  // directional2.position.set( -10, 0, -10 );
-  // // directional.rotation.set(2,2,2);
-  // directional2.castShadow = true;
-  // directional2.shadow.bias = -0.0005;
-  
-
+  // scene.add( helperPointL0, pointL0 );
 
 
 
 
 }
+  
 
 function loadModels(modelName) {
   const loader = new GLTFLoader();
@@ -119,9 +116,14 @@ function loadModels(modelName) {
     model = result.scene;
     model.position.set(0,0,0);
     model.scale.set(5, 5, 5);
-    model.traverse( function( node ) { if ( node instanceof THREE.Mesh ) { node.castShadow = true; node.receiveShadow = true;} } );
-
-
+    model.traverse( function( node ) { if ( node instanceof THREE.Mesh ) {
+      node.castShadow = true; 
+      node.receiveShadow = true;
+      const newMaterial = new THREE.MeshPhongMaterial( { color: node.material.color } );
+      node.material = newMaterial;
+    
+    } } );
+    
     model.castShadow = true
     const mixer = new THREE.AnimationMixer(model);
     mixers.push(mixer);
@@ -139,8 +141,6 @@ function loadModels(modelName) {
 
   const onProgress = (progress) => { };
 
-  const modelPosition = new THREE.Vector3(0, 0, 0);
-
   loader.load(
     modelName,
     (gltf) => onLoad(gltf),
@@ -152,15 +152,17 @@ function loadModels(modelName) {
 
 
 function createRenderer() {
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.stencil = false;
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true  });
+  renderer.stencil = true;
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(2); //(window.devicePixelRatio);
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+  // renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
   renderer.shadowMapSoft = true;
   renderer.powerPreference = "high-performance";
+  // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  renderer.shadowMapDarkness = 300;
+
+  // renderer.shadowMapDarkness = 300;
 
   renderer.shadowMap.enabled = true
   // console.log(window.devicePixelRatio);
