@@ -24,8 +24,8 @@ function init() {
   container = document.querySelector("#scene-container");
 
   // TODO: adapt to phone height/width
-  PAN_TOUCH_ROTATE = 4.2/container.clientHeight;
-  PAN_MOUSE_ROTATE = 4.2/container.clientHeight;
+  PAN_TOUCH_ROTATE = 3.2/container.clientHeight;
+  PAN_MOUSE_ROTATE = 3.2/container.clientHeight;
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color('#c1ebf2'); //("#323238");
