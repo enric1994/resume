@@ -119,8 +119,8 @@ function loadModels(modelName) {
     model.traverse( function( node ) { if ( node instanceof THREE.Mesh ) {
       node.castShadow = true; 
       node.receiveShadow = true;
-      const newMaterial = new THREE.MeshPhongMaterial( { color:  'grey'} );
-      // node.material.color
+      const newMaterial = new THREE.MeshPhongMaterial( { color:  node.material.color} );
+      // 
       node.material = newMaterial;
     
     } } );
@@ -1358,7 +1358,7 @@ function requestRenderIfNotRequested() {
   
           requestAnimationFrame( render );
   
-      }, 1000 / 5 );
+      }, 1000 / 30 );
   
   }
 }
