@@ -38,7 +38,7 @@ function init() {
   PAN_MOUSE_ROTATE = 3/height;
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color('white'); //("#323238");
+  // scene.background = new THREE.Color("transparent"); //("#323238");
   // scene.fog = new THREE.Fog(0xd5f8f8, 100, 300);
   // scene.fog = new THREE.Fog(0xd5f8f8, 170, 250);
 
@@ -215,6 +215,7 @@ function createRenderer() {
   // renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
   renderer.shadowMapSoft = true;
   renderer.powerPreference = "high-performance";
+  renderer.setClearColor( 0x000000, 0 ); // the default
   // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 
