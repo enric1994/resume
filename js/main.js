@@ -1,5 +1,9 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/build/three.module.js';
 import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/loaders/GLTFLoader.js';
+import {EffectComposer} from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/EffectComposer.js';
+import {RenderPass} from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/RenderPass.js';
+import {BokehPass} from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/BokehPass.js';
+import {BloomPass} from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/BloomPass.js';
 
 
 let PAN_TOUCH_ROTATE;
@@ -12,6 +16,9 @@ let scene;
 let controls;
 let model;
 let renderRequested;
+let composer;
+let width;
+let height;
 
 var modelName = "gltf/model.glb";
 const mixers = [];
@@ -23,14 +30,17 @@ function init() {
 
   container = document.querySelector("#scene-container");
 
+  width = container.clientWidth;
+  height = container.clientHeight;
+
   // TODO: adapt to phone height/width
-  PAN_TOUCH_ROTATE = 3/container.clientHeight;
-  PAN_MOUSE_ROTATE = 3/container.clientHeight;
+  PAN_TOUCH_ROTATE = 3/height;
+  PAN_MOUSE_ROTATE = 3/height;
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color('#c1ebf2'); //("#323238");
+  scene.background = new THREE.Color('white'); //("#323238");
   // scene.fog = new THREE.Fog(0xd5f8f8, 100, 300);
-  scene.fog = new THREE.Fog(0xd5f8f8, 170, 250);
+  // scene.fog = new THREE.Fog(0xd5f8f8, 170, 250);
 
 
   createCamera();
@@ -43,6 +53,23 @@ function init() {
     update();
     requestRenderIfNotRequested();
   });
+
+  composer = new EffectComposer(renderer);
+  // composer.addPass(new RenderPass(scene, camera));
+  // composer.addPass(new BloomPass());
+  
+  // Blur pass
+  const bokehPass = new BokehPass( scene, camera, {
+    focus: 0.1,
+    aperture: 0.00004,
+    maxblur: 1,
+    
+    width: width,
+    height: height
+  } );
+  // composer.addPass( bokehPass );
+  
+
 }
 
 function createCamera() {
@@ -57,7 +84,7 @@ function createCamera() {
 function createLights() {
 
   // Ambient light
-  const ambientLight = new THREE.AmbientLight( 0xffffff, 1 );
+  const ambientLight = new THREE.AmbientLight( 0xffffff, .7 );
 
   // Hemi light
   const hemiLight = new THREE.HemisphereLight( 'white', 'orange', .7 );
@@ -70,7 +97,7 @@ function createLights() {
   const dir2 = new THREE.DirectionalLight( 'white', 1 );
   dir2.position.set( -10, 0, 10 );
 
-  // Directional light 3
+  // Directional light L1
   const dir3 = new THREE.DirectionalLight( 'white', 1.5 );
   dir3.position.set( 10, 30, -10 );
 
@@ -78,10 +105,10 @@ function createLights() {
 dir3.shadow.mapSize.width = 512; 
 dir3.shadow.mapSize.height = 512; 
 dir3.shadow.camera.near = 0.5; 
-dir3.shadow.camera.far = 500; 
+dir3.shadow.camera.far = 60; 
 
-// dir3.shadow.camera.width = 30;
-// dir3.shadow.camera.height = 500;
+// dir4.shadow.camera.width = 30;
+// dir4.shadow.camera.height = 500;
 
 dir3.shadow.camera.top = 30;
 dir3.shadow.camera.bottom = -30;
@@ -91,15 +118,41 @@ dir3.shadow.camera.right = -30;
 
   dir3.castShadow = true;
   dir3.shadow.bias = -0.0005;
+
+  // /////////////
+
+   // Directional light L1
+   const dir4 = new THREE.DirectionalLight( 'white', 1.5 );
+   dir4.position.set( -10, 30, -5 );
+ 
+   //Set up shadow properties for the light
+ dir4.shadow.mapSize.width = 512; 
+ dir4.shadow.mapSize.height = 512; 
+ dir4.shadow.camera.near = 80; 
+ dir4.shadow.camera.far = 500; 
+ 
+ // dir4.shadow.camera.width = 30;
+ // dir4.shadow.camera.height = 500;
+ 
+ dir4.shadow.camera.top = 30;
+ dir4.shadow.camera.bottom = -30;
+ dir4.shadow.camera.left = 30;
+ dir4.shadow.camera.right = -30;
+   
+ 
+   dir4.castShadow = true;
+   dir4.shadow.bias = -0.0005;
+
   
-  const dir3Helper = new THREE.DirectionalLightHelper( dir3, 3 );
+  const dir4Helper = new THREE.DirectionalLightHelper( dir4, 3 );
 
   scene.add(ambientLight);
   scene.add(hemiLight);
   scene.add( dir1 );
   scene.add( dir2 );
   scene.add( dir3 );
-  // scene.add(dir3Helper);
+  scene.add( dir4 );
+  // scene.add(dir4Helper);
   
   // scene.add( helperPointL0, pointL0 );
 
@@ -119,6 +172,8 @@ function loadModels(modelName) {
     model.traverse( function( node ) { if ( node instanceof THREE.Mesh ) {
       node.castShadow = true; 
       node.receiveShadow = true;
+      node.flatShading = true;
+      node.blending= THREE.NoBlending;
       const newMaterial = new THREE.MeshPhongMaterial( { color:  node.material.color} );
       // 
       node.material = newMaterial;
@@ -163,7 +218,7 @@ function createRenderer() {
   // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 
-  // renderer.shadowMapDarkness = 300;
+  // renderer.shadowMapDarkness = 300000000;
 
   renderer.shadowMap.enabled = true
   // console.log(window.devicePixelRatio);
@@ -1348,6 +1403,7 @@ function render() {
   renderRequested = false;
 
   renderer.render(scene, camera);
+  // composer.render();
 }
 
 function requestRenderIfNotRequested() {
