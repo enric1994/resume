@@ -134,10 +134,10 @@ dir3.shadow.camera.right = -30;
  // dir4.shadow.camera.width = 30;
  // dir4.shadow.camera.height = 500;
  
- dir4.shadow.camera.top = 30;
- dir4.shadow.camera.bottom = -30;
- dir4.shadow.camera.left = 30;
- dir4.shadow.camera.right = -30;
+ dir4.shadow.camera.top = 50;
+ dir4.shadow.camera.bottom = -50;
+ dir4.shadow.camera.left = 50;
+ dir4.shadow.camera.right = -50;
    
  
    dir4.castShadow = true;
