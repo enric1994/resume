@@ -1,5 +1,6 @@
 html, body {
-    background-color: white;
+  background: rgb(124,231,235);
+  background: linear-gradient(180deg, rgba(124,231,235,1) 1%, rgba(0,183,255,1) 30%);
   }
   html, body {margin: 0; height: 100%; overflow: hidden}
 
