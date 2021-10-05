@@ -126,10 +126,10 @@ dir3.shadow.camera.right = -30;
    dir4.position.set( -10, 30, -5 );
  
    //Set up shadow properties for the light
- dir4.shadow.mapSize.width = 512; 
- dir4.shadow.mapSize.height = 512; 
+ dir4.shadow.mapSize.width = 2048; 
+ dir4.shadow.mapSize.height = 2048; 
  dir4.shadow.camera.near = 80; 
- dir4.shadow.camera.far = 500; 
+ dir4.shadow.camera.far = 150; 
  
  // dir4.shadow.camera.width = 30;
  // dir4.shadow.camera.height = 500;
