@@ -8,6 +8,10 @@ import {BloomPass} from 'https://threejsfundamentals.org/threejs/resources/three
 
 let PAN_TOUCH_ROTATE;
 let PAN_MOUSE_ROTATE
+let UPPER_LIMIT;
+let FPS;
+let PAN_SPEED;
+let isTouchPad;
 
 let container;
 let camera;
@@ -25,6 +29,34 @@ const mixers = [];
 const clock = new THREE.Clock();
 
 
+// Detect touchpad or mouse
+var eventCount = 0;
+var eventCountStart;
+var isTouchPadDefined = false
+
+var mouseHandle = function (evt) {
+    isTouchPadDefined = isTouchPad || typeof isTouchPad !== "undefined";
+    if (!isTouchPadDefined) {
+        if (eventCount === 0) {
+            eventCountStart = new Date().getTime();
+        }
+
+        eventCount++;
+
+        if (new Date().getTime() - eventCountStart > 100) {
+                if (eventCount > 10) {
+                    isTouchPad = true;
+                } else {
+                    isTouchPad = false;
+                }
+            isTouchPadDefined = true;
+        }
+    }
+}
+
+document.addEventListener("mousewheel", mouseHandle, false);
+document.addEventListener("DOMMouseScroll", mouseHandle, false);
+
 function init() {
 
 
@@ -32,6 +64,11 @@ function init() {
 
   width = container.clientWidth;
   height = container.clientHeight;
+
+  UPPER_LIMIT = 32;
+  FPS = 60;
+
+  PAN_SPEED = 30;
 
   // TODO: adapt to phone height/width
   PAN_TOUCH_ROTATE = 3/height;
@@ -282,7 +319,7 @@ function createControls() {
     this.enablePan = true;
     this.panSpeed = 1.0;
     this.screenSpacePanning = true; // if false, pan orthogonal to world-space direction camera.up
-    this.keyPanSpeed = 4.0;	// pixels moved per arrow key push
+    this.keyPanSpeed = PAN_SPEED;	// pixels moved per arrow key push
   
     // Set to true to automatically rotate around the target
     // If auto-rotate is enabled, you must call controls.update() in your animation loop
@@ -290,7 +327,7 @@ function createControls() {
     this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
   
     // Set to false to disable use of the keys
-    this.enableKeys = true;
+    this.enableKeys = false;
   
     // The four arrow keys
     this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
@@ -761,16 +798,17 @@ function createControls() {
     }
   
     function handleMouseMovePan( event ) {
+  // Disable pan with mouse
+
+      // panEnd.set( event.clientX, event.clientY );
   
-      panEnd.set( event.clientX, event.clientY );
+      // panDelta.subVectors( panEnd, panStart ).multiplyScalar( scope.panSpeed );
   
-      panDelta.subVectors( panEnd, panStart ).multiplyScalar( scope.panSpeed );
+      // pan( panDelta.x, panDelta.y );
   
-      pan( panDelta.x, panDelta.y );
+      // panStart.copy( panEnd );
   
-      panStart.copy( panEnd );
-  
-      scope.update();
+      // scope.update();
   
     }
   
@@ -940,6 +978,11 @@ function createControls() {
       }
   
       panDelta.subVectors( panEnd, panStart ).multiplyScalar( scope.panSpeed );
+
+      // Avoid scroll above scene
+      if(scope.object.position.y > UPPER_LIMIT & panDelta.y > 0){
+        return
+      }
   
       pan( panDelta.x, panDelta.y );
       rotateLeft(panDelta.y * PAN_TOUCH_ROTATE);
@@ -1153,11 +1196,30 @@ function createControls() {
     }
   
     function onMouseWheel( event ) {
+
+
+  // Check if touchpad is being used
+  console.log(isTouchPad);
+  if(isTouchPad){
+    scope.keyPanSpeed = 4;
+    scope.update();
+  }else{
+    scope.keyPanSpeed = 30;
+    scope.update();
+  }
+
       if ( event.deltaY > 0 ) {
+
         pan( 0, - scope.keyPanSpeed );
         rotateLeft(-scope.keyPanSpeed * PAN_MOUSE_ROTATE);
         
       }else{
+
+        // Avoid scroll above scene
+        if(scope.object.position.y > UPPER_LIMIT){
+          return
+        }
+
         pan( 0, scope.keyPanSpeed );
         rotateLeft(scope.keyPanSpeed * PAN_MOUSE_ROTATE);
       }
@@ -1415,7 +1477,7 @@ function requestRenderIfNotRequested() {
   
           requestAnimationFrame( render );
   
-      }, 1000 / 30 );
+      }, 1000 / FPS );
   
   }
 }
