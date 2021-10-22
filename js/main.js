@@ -1199,7 +1199,6 @@ function createControls() {
 
 
   // Check if touchpad is being used
-  console.log(isTouchPad);
   if(isTouchPad){
     scope.keyPanSpeed = 4;
     scope.update();
