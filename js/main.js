@@ -200,7 +200,20 @@ dir3.shadow.camera.right = -30;
   
 
 function loadModels(modelName) {
-  const loader = new GLTFLoader();
+  var manager = new THREE.LoadingManager();
+  manager.onProgress = function(item, loaded, total) {
+    console.log(item, loaded, total);
+
+    if(total==2){
+      document.getElementById("loader").style.display = "none";
+      document.getElementById("scene-container").style.display = "block";
+
+    }else{
+      document.getElementById("scene-container").style.display = "none";
+    }
+ };
+
+  const loader = new GLTFLoader(manager);
 
   const onLoad = (result) => {
     model = result.scene;
