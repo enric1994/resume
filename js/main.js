@@ -124,7 +124,7 @@ function createLights() {
   const ambientLight = new THREE.AmbientLight( 0xffffff, .7 );
 
   // Hemi light
-  const hemiLight = new THREE.HemisphereLight( 'white', 'orange', .7 );
+  const hemiLight = new THREE.HemisphereLight( 'white', 'orange', .5 );
 
   // Directional light 1
   const dir1 = new THREE.DirectionalLight( 'white', 1 );
@@ -168,13 +168,13 @@ shadow1.shadow.bias = -0.00005;
 
    // Directional light L1
    const shadow2 = new THREE.DirectionalLight( 'white', 1.5 );
-   shadow2.position.set( 10, 30, -5 );
+   shadow2.position.set( 20, 30, -5 );
  
    //Set up shadow properties for the light
    shadow2.shadow.mapSize.width = 512; 
    shadow2.shadow.mapSize.height = 512; 
-   shadow2.shadow.camera.near = 80; 
-   shadow2.shadow.camera.far = 120; 
+   shadow2.shadow.camera.near = 70; 
+   shadow2.shadow.camera.far = 140; 
  
  // dir4.shadow.camera.width = 30;
  // dir4.shadow.camera.height = 500;
