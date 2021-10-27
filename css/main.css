@@ -1,7 +1,9 @@
 html, body {
-  background: rgb(124,231,235);
-  background: linear-gradient(180deg, rgba(124,231,235,1) 1%, rgba(0,183,255,1) 30%);
-  }
+  background: rgb(242,209,224);
+  background: linear-gradient(319deg, rgba(242,209,224,1) 0%, rgba(223,244,219,1) 61%, rgba(145,227,246,1) 100%);
+  /* background: rgb(255,234,243);
+  background: linear-gradient(319deg, rgba(255,234,243,1) 0%, rgba(238,247,236,1) 61%, rgba(215,244,251,1) 100%); */
+}
   html, body {margin: 0; height: 100%; overflow: hidden}
 
 
