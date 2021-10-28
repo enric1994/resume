@@ -12,6 +12,7 @@ let UPPER_LIMIT;
 let LOWER_LIMIT;
 let FPS;
 let PAN_SPEED;
+let PAN_SPEED2;
 let isTouchPad;
 
 let container;
@@ -44,7 +45,7 @@ var mouseHandle = function (evt) {
 
         eventCount++;
 
-        if (new Date().getTime() - eventCountStart > 100) {
+        if (new Date().getTime() - eventCountStart > 500) {
                 if (eventCount > 10) {
                     isTouchPad = true;
                 } else {
@@ -68,9 +69,10 @@ function init() {
 
   UPPER_LIMIT = 32;
   LOWER_LIMIT = -521;
-  FPS = 60;
+  FPS = 0;
 
-  PAN_SPEED = 30;
+  PAN_SPEED = 40;
+  PAN_SPEED2 = 4;
 
   // TODO: adapt to phone height/width
   PAN_TOUCH_ROTATE = 3/height;
@@ -1228,10 +1230,10 @@ function createControls() {
 
   // Check if touchpad is being used
   if(isTouchPad){
-    scope.keyPanSpeed = 4;
+    scope.keyPanSpeed = PAN_SPEED2;
     scope.update();
   }else{
-    scope.keyPanSpeed = 30;
+    scope.keyPanSpeed = PAN_SPEED;
     scope.update();
   }
 
@@ -1504,11 +1506,11 @@ function requestRenderIfNotRequested() {
   if (!renderRequested) {
     renderRequested = true;
 
-      setTimeout( function() {
+      // setTimeout( function() {
   
           requestAnimationFrame( render );
   
-      }, 1000 / FPS );
+      // }, 1000 / FPS );
   
   }
 }
