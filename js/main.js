@@ -9,6 +9,7 @@ import {BloomPass} from 'https://threejsfundamentals.org/threejs/resources/three
 let PAN_TOUCH_ROTATE;
 let PAN_MOUSE_ROTATE
 let UPPER_LIMIT;
+let LOWER_LIMIT;
 let FPS;
 let PAN_SPEED;
 let isTouchPad;
@@ -66,6 +67,7 @@ function init() {
   height = container.clientHeight;
 
   UPPER_LIMIT = 32;
+  LOWER_LIMIT = -521;
   FPS = 60;
 
   PAN_SPEED = 30;
@@ -1006,6 +1008,9 @@ function createControls() {
       if(scope.object.position.y > UPPER_LIMIT & panDelta.y > 0){
         return
       }
+      if(scope.object.position.y < LOWER_LIMIT & panDelta.y < 0){
+        return
+      }
   
       pan( panDelta.x, panDelta.y );
       rotateLeft(panDelta.y * PAN_TOUCH_ROTATE);
@@ -1231,6 +1236,10 @@ function createControls() {
   }
 
       if ( event.deltaY > 0 ) {
+
+        if(scope.object.position.y < LOWER_LIMIT){
+          return
+        }
 
         pan( 0, - scope.keyPanSpeed );
         rotateLeft(-scope.keyPanSpeed * PAN_MOUSE_ROTATE);
