@@ -1,8 +1,10 @@
-import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/build/three.module.js';
-import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/loaders/GLTFLoader.js';
-import { EffectComposer } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/EffectComposer.js';
+import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+// https://cdn.skypack.dev/three@0.132.2/examples/jsm/controls/OrbitControls.js
+
+import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/loaders/GLTFLoader.js';
+import { EffectComposer } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/RenderPass.js';
-import { BokehPass } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/BokehPass.js';
+import { BokehPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/BokehPass.js';
 import { BloomPass } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/BloomPass.js';
 
 
@@ -71,7 +73,7 @@ function init() {
   LOWER_LIMIT = -521;
   FPS = 0;
 
-  PAN_SPEED = 40;
+  PAN_SPEED = 70;
   PAN_SPEED2 = 10;
 
   PAN_TOUCH_ROTATE = 3 / height;
