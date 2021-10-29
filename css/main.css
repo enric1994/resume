@@ -10,7 +10,6 @@ html, body {
   #scene-container {
     width: 100vw;
     height: 100vh;
-    /* display: none; */
   }
 
   h2 {
@@ -26,11 +25,10 @@ html, body {
     border-radius: 50%;
     border-top: 16px solid black;
   border-bottom: 16px solid black;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     -webkit-animation: spin 3s linear infinite; /* Safari */
     animation: spin 3s linear infinite;
-    /* margin: auto; */
   }
   
   /* Safari */
