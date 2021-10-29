@@ -1,8 +1,6 @@
 html, body {
   background: rgb(242,209,224);
   background: linear-gradient(319deg, rgba(242,209,224,1) 0%, rgba(223,244,219,1) 61%, rgba(145,227,246,1) 100%);
-  /* background: rgb(255,234,243);
-  background: linear-gradient(319deg, rgba(255,234,243,1) 0%, rgba(238,247,236,1) 61%, rgba(215,244,251,1) 100%); */
 }
   html, body {margin: 0; height: 100%; overflow: hidden}
 
@@ -15,6 +13,44 @@ html, body {
     /* display: none; */
   }
 
+  h2 {
+    font-family: 'Courier New', Courier, monospace;
+  }
+
   #loader{
   text-align: center;
+  }
+
+  .loader {
+    border: 16px solid #5c5c5c;
+    border-radius: 50%;
+    border-top: 16px solid black;
+  border-bottom: 16px solid black;
+    width: 80px;
+    height: 80px;
+    -webkit-animation: spin 3s linear infinite; /* Safari */
+    animation: spin 3s linear infinite;
+    /* margin: auto; */
+  }
+  
+  /* Safari */
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .vertical-center {
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
   }

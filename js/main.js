@@ -72,7 +72,7 @@ function init() {
   FPS = 0;
 
   PAN_SPEED = 40;
-  PAN_SPEED2 = 4;
+  PAN_SPEED2 = 10;
 
   // TODO: adapt to phone height/width
   PAN_TOUCH_ROTATE = 3/height;
@@ -218,7 +218,7 @@ function loadModels(modelName) {
   manager.onProgress = function(item, loaded, total) {
     console.log(item, loaded, total);
 
-    if(total==2){
+    if(total==3){
       document.getElementById("loader").style.display = "none";
       document.getElementById("scene-container").style.display = "block";
 
