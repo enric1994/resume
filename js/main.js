@@ -218,7 +218,7 @@ function loadModels(modelName) {
   manager.onProgress = function(item, loaded, total) {
     console.log(item, loaded, total);
 
-    if(total==3){
+    if(total==2){
       document.getElementById("loader").style.display = "none";
       document.getElementById("scene-container").style.display = "block";
 
