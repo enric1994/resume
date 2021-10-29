@@ -216,7 +216,6 @@ shadow1.shadow.bias = -0.00005;
 function loadModels(modelName) {
   var manager = new THREE.LoadingManager();
   manager.onProgress = function(item, loaded, total) {
-    console.log(item, loaded, total);
 
     if(total==2){
       document.getElementById("loader").style.display = "none";
