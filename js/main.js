@@ -1,11 +1,11 @@
 import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
-// https://cdn.skypack.dev/three@0.132.2/examples/jsm/controls/OrbitControls.js
 
 import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/loaders/GLTFLoader.js';
-import { EffectComposer } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/RenderPass.js';
-import { BokehPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/BokehPass.js';
-import { BloomPass } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/BloomPass.js';
+// import { EffectComposer } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/EffectComposer.js';
+// import { RenderPass } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/RenderPass.js';
+// import { BokehPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/BokehPass.js';
+// import { GammaCorrectionShader } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/shaders/GammaCorrectionShader.js';
+// import { ShaderPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/ShaderPass.js';
 
 
 let PAN_TOUCH_ROTATE;
@@ -80,6 +80,7 @@ function init() {
   PAN_MOUSE_ROTATE = 3 / height;
 
   scene = new THREE.Scene();
+  // scene.background = new THREE.Color( 0xfffffff ); 
 
 
   createCamera();
@@ -93,29 +94,31 @@ function init() {
     requestRenderIfNotRequested();
   });
 
-  composer = new EffectComposer(renderer);
-  // composer.addPass(new RenderPass(scene, camera));
-  // composer.addPass(new BloomPass());
+  // composer = new EffectComposer(renderer);
+  // var renderPass = new RenderPass(scene, camera);
+  //   var gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
 
-  // Blur pass
-  const bokehPass = new BokehPass(scene, camera, {
-    focus: 0.1,
-    aperture: 0.00004,
-    maxblur: 1,
+    
+// const bokehPass = new BokehPass( scene, camera, {
+//   focus: 0.001,
+//   aperture: 0.00003,
+//   maxblur: 10,
 
-    width: width,
-    height: height
-  });
-  // composer.addPass( bokehPass );
+//   width: width,
+//   height: height
+// } );
 
+// composer.addPass(renderPass);
+// composer.addPass(gammaCorrectionPass);
+// composer.addPass( bokehPass );
 
 }
 
 function createCamera() {
   const fov = 20;
   const aspect = container.clientWidth / container.clientHeight;
-  const near = 0.01;
-  const far = 10000;
+  const near = 1;
+  const far = 400;
   camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.set(0, 10, 160);
 }
@@ -280,7 +283,6 @@ function createRenderer() {
   renderer.powerPreference = "high-performance";
   renderer.setClearColor(0x000000, 0); // the default
   // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
 
   // renderer.shadowMapDarkness = 300000000;
 
