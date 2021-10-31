@@ -98,19 +98,19 @@ function init() {
   // var renderPass = new RenderPass(scene, camera);
   //   var gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
 
-    
-// const bokehPass = new BokehPass( scene, camera, {
-//   focus: 0.001,
-//   aperture: 0.00003,
-//   maxblur: 10,
 
-//   width: width,
-//   height: height
-// } );
+  // const bokehPass = new BokehPass( scene, camera, {
+  //   focus: 0.001,
+  //   aperture: 0.00003,
+  //   maxblur: 10,
 
-// composer.addPass(renderPass);
-// composer.addPass(gammaCorrectionPass);
-// composer.addPass( bokehPass );
+  //   width: width,
+  //   height: height
+  // } );
+
+  // composer.addPass(renderPass);
+  // composer.addPass(gammaCorrectionPass);
+  // composer.addPass( bokehPass );
 
 }
 
@@ -137,7 +137,7 @@ function createLights() {
 
   // Directional light 2 
   const dir2 = new THREE.DirectionalLight('white', 1);
-  dir2.position.set(-10, 10 , 5);
+  dir2.position.set(-10, 10, 5);
 
   // Directional light 3
   const dir3 = new THREE.DirectionalLight('white', 0.7);
@@ -151,18 +151,14 @@ function createLights() {
   const dir5 = new THREE.DirectionalLight('white', 0.7);
   dir2.position.set(-10, 10, -5);
 
-  // Shadow light L1
+  // Shadow light
   const shadow1 = new THREE.DirectionalLight('white', 1.5);
   shadow1.position.set(5, 9, 0);
 
-  //Set up shadow properties for the light
   shadow1.shadow.mapSize.width = 2048;
   shadow1.shadow.mapSize.height = 2048;
   shadow1.shadow.camera.near = 3;
   shadow1.shadow.camera.far = 500;
-
-  // dir4.shadow.camera.width = 30;
-  // dir4.shadow.camera.height = 500;
 
   shadow1.shadow.camera.top = 250;
   shadow1.shadow.camera.bottom = -250;
@@ -173,8 +169,6 @@ function createLights() {
   shadow1.castShadow = true;
   shadow1.shadow.bias = -0.01;
 
-  // const dir4Helper = new THREE.DirectionalLightHelper( dir4, 3 );
-
   scene.add(ambientLight);
   scene.add(hemiLight);
   scene.add(dir1);
@@ -183,13 +177,6 @@ function createLights() {
   scene.add(dir4);
   scene.add(dir5);
   scene.add(shadow1);
-  // scene.add(shadow2);
-  // scene.add(dir4Helper);
-
-  // scene.add( helperPointL0, pointL0 );
-
-
-
 
 }
 
@@ -258,16 +245,10 @@ function createRenderer() {
   renderer.stencil = true;
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(2); //(window.devicePixelRatio);
-  // renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
   renderer.shadowMapSoft = true;
   renderer.powerPreference = "high-performance";
   renderer.setClearColor(0x000000, 0); // the default
-  // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-  // renderer.shadowMapDarkness = 300000000;
-
   renderer.shadowMap.enabled = true
-  // console.log(window.devicePixelRatio);
   renderer.gammaFactor = 2.2;
   renderer.gammaOutput = true;
   renderer.physicallyCorrectLights = true;

@@ -11,11 +11,24 @@
     <meta name="theme-color" content="black">
     <link href="css/main.css" rel="stylesheet">
     <title>Enric Moreu | 3D resume</title>
+
+    <script>
+        fetch('https://api.countapi.xyz/hit/resume.enricmor.eu/visits')
+            .then(response => response.json())
+            .then(data => null);
+
+    </script>
+
 </head>
 
 <body>
     <div class="vertical-center" id="loader">
-        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        <div class="lds-ellipsis">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
         <h2><strong>Loading</strong></h2>
     </div>
     <div id="scene-container"></div>
