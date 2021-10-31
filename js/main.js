@@ -133,66 +133,45 @@ function createLights() {
 
   // Directional light 1
   const dir1 = new THREE.DirectionalLight('white', 1);
-  dir1.position.set(0, 30, 50);
+  dir1.position.set(10, 10, 10);
 
   // Directional light 2 
   const dir2 = new THREE.DirectionalLight('white', 1);
-  dir2.position.set(-30, 50, 100);
+  dir2.position.set(-10, 10 , 5);
+
+  // Directional light 3
+  const dir3 = new THREE.DirectionalLight('white', 0.7);
+  dir3.position.set(-10, -10, -5);
 
   // Directional light 4
   const dir4 = new THREE.DirectionalLight('white', 0.7);
-  dir2.position.set(0, 10, -50);
+  dir2.position.set(10, 10, -10);
 
   // Directional light 5
   const dir5 = new THREE.DirectionalLight('white', 0.7);
-  dir2.position.set(-30, 30, -100);
+  dir2.position.set(-10, 10, -5);
 
-  // Directional light L1
+  // Shadow light L1
   const shadow1 = new THREE.DirectionalLight('white', 1.5);
-  shadow1.position.set(5, 15, -5);
+  shadow1.position.set(5, 9, 0);
 
   //Set up shadow properties for the light
-  shadow1.shadow.mapSize.width = 512;
-  shadow1.shadow.mapSize.height = 512;
-  shadow1.shadow.camera.near = 10;
-  shadow1.shadow.camera.far = 40;
+  shadow1.shadow.mapSize.width = 2048;
+  shadow1.shadow.mapSize.height = 2048;
+  shadow1.shadow.camera.near = 3;
+  shadow1.shadow.camera.far = 500;
 
   // dir4.shadow.camera.width = 30;
   // dir4.shadow.camera.height = 500;
 
-  shadow1.shadow.camera.top = 30;
-  shadow1.shadow.camera.bottom = -30;
-  shadow1.shadow.camera.left = 30;
-  shadow1.shadow.camera.right = -30;
+  shadow1.shadow.camera.top = 250;
+  shadow1.shadow.camera.bottom = -250;
+  shadow1.shadow.camera.left = 250;
+  shadow1.shadow.camera.right = -250;
 
 
   shadow1.castShadow = true;
-  shadow1.shadow.bias = -0.00005;
-
-  // /////////////
-
-  // Directional light L1
-  const shadow2 = new THREE.DirectionalLight('white', 1.5);
-  shadow2.position.set(20, 30, -5);
-
-  //Set up shadow properties for the light
-  shadow2.shadow.mapSize.width = 512;
-  shadow2.shadow.mapSize.height = 512;
-  shadow2.shadow.camera.near = 70;
-  shadow2.shadow.camera.far = 140;
-
-  // dir4.shadow.camera.width = 30;
-  // dir4.shadow.camera.height = 500;
-
-  shadow2.shadow.camera.top = 50;
-  shadow2.shadow.camera.bottom = -50;
-  shadow2.shadow.camera.left = 50;
-  shadow2.shadow.camera.right = -50;
-
-
-  shadow2.castShadow = true;
-  shadow2.shadow.bias = -0.04;
-
+  shadow1.shadow.bias = -0.01;
 
   // const dir4Helper = new THREE.DirectionalLightHelper( dir4, 3 );
 
@@ -200,10 +179,11 @@ function createLights() {
   scene.add(hemiLight);
   scene.add(dir1);
   scene.add(dir2);
-  scene.add(shadow1);
+  scene.add(dir3);
   scene.add(dir4);
   scene.add(dir5);
-  scene.add(shadow2);
+  scene.add(shadow1);
+  // scene.add(shadow2);
   // scene.add(dir4Helper);
 
   // scene.add( helperPointL0, pointL0 );
