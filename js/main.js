@@ -27,6 +27,7 @@ let renderRequested = false;
 // let composer;
 let width;
 let height;
+let cam_y;
 
 var modelName = "gltf/model.glb";
 const mixers = [];
@@ -73,8 +74,8 @@ function init() {
   LOWER_LIMIT = -521;
   FPS = 0;
 
-  PAN_SPEED = 70;
-  PAN_SPEED2 = 15;
+  PAN_SPEED = 40;
+  PAN_SPEED2 = 8;
 
   PAN_TOUCH_ROTATE = 3 / height;
   PAN_MOUSE_ROTATE = 3 / height;
@@ -294,7 +295,7 @@ function createControls() {
 
     // Set to true to enable damping (inertia)
     // If damping is enabled, you must call controls.update() in your animation loop
-    this.enableDamping = false;
+    this.enableDamping = true;
     this.dampingFactor = 0.05;
 
     // This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
@@ -308,7 +309,7 @@ function createControls() {
 
     // Set to false to disable panning
     this.enablePan = true;
-    this.panSpeed = 1.0;
+    this.panSpeed = 2;
     this.screenSpacePanning = true; // if false, pan orthogonal to world-space direction camera.up
     this.keyPanSpeed = PAN_SPEED;	// pixels moved per arrow key push
 
@@ -373,6 +374,13 @@ function createControls() {
 
     };
 
+    this.stop = function () {
+
+      panOffset.set(0, 0, 0);
+      sphericalDelta.set(0, 0, 0);
+
+    };
+
     // this method is exposed, but perhaps it would be better if we can make it private...
     this.update = function () {
 
@@ -408,12 +416,12 @@ function createControls() {
         if (scope.enableDamping) {
 
           spherical.theta += sphericalDelta.theta * scope.dampingFactor;
-          spherical.phi += sphericalDelta.phi * scope.dampingFactor;
+          // spherical.phi += sphericalDelta.phi * scope.dampingFactor;
 
         } else {
 
           spherical.theta += sphericalDelta.theta;
-          spherical.phi += sphericalDelta.phi;
+          // spherical.phi += sphericalDelta.phi;
 
         }
 
@@ -443,7 +451,7 @@ function createControls() {
         }
 
         // restrict phi to be between desired limits
-        spherical.phi = Math.max(scope.minPolarAngle, Math.min(scope.maxPolarAngle, spherical.phi));
+        // spherical.phi = Math.max(scope.minPolarAngle, Math.min(scope.maxPolarAngle, spherical.phi));
 
         spherical.makeSafe();
 
@@ -477,7 +485,7 @@ function createControls() {
         if (scope.enableDamping === true) {
 
           sphericalDelta.theta *= (1 - scope.dampingFactor);
-          sphericalDelta.phi *= (1 - scope.dampingFactor);
+          // sphericalDelta.phi *= (1 - scope.dampingFactor);
 
           panOffset.multiplyScalar(1 - scope.dampingFactor);
 
@@ -1195,6 +1203,7 @@ function createControls() {
       // Check if touchpad is being used
       if (isTouchPad) {
         scope.keyPanSpeed = PAN_SPEED2;
+        scope.enableDamping=false;
         scope.update();
       } else {
         scope.keyPanSpeed = PAN_SPEED;
@@ -1446,12 +1455,48 @@ function update() {
 
 }
 
+function resizeRendererToDisplaySize(renderer) {
+  const canvas = renderer.domElement;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  const needResize = canvas.width !== width || canvas.height !== height;
+  if (needResize) {
+    renderer.setSize(width, height, false);
+  }
+  return needResize;
+}
 
 function render() {
+
   renderRequested = undefined;
 
+  if (resizeRendererToDisplaySize(renderer)) {
+    const canvas = renderer.domElement;
+    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+    camera.updateProjectionMatrix();
+  }
+
+
   renderer.render(scene, camera);
+  controls.update()
   // composer.render();
+
+  cam_y = controls.object.position.y;
+  if(
+    (cam_y > 9) || 
+    (cam_y < -49.4 && cam_y > -50) || 
+    (cam_y < -107.7 && cam_y > -108.3) ||
+    (cam_y < -167.2 && cam_y > -167.8) ||
+    (cam_y < -226.2 && cam_y > -226.8) ||
+    (cam_y < -315.2 && cam_y > -315.8) ||
+    (cam_y < -365.7 && cam_y > -366.3) ||
+    (cam_y < -403.5 && cam_y > -404.1) ||
+    (cam_y < -461.5 && cam_y > -462.1) ||
+    (cam_y < -521)
+    ){
+    controls.stop();
+  }
+
 }
 
 function requestRenderIfNotRequested() {
@@ -1465,14 +1510,5 @@ function requestRenderIfNotRequested() {
 
 init();
 
-
-
-function onWindowResize() {
-  camera.aspect = container.clientWidth / container.clientHeight;
-
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(container.clientWidth, container.clientHeight);
-}
-window.addEventListener("resize", onWindowResize, false);
 controls.addEventListener('change', requestRenderIfNotRequested);
+window.addEventListener('resize', requestRenderIfNotRequested);
