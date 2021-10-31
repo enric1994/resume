@@ -23,8 +23,8 @@ let renderer;
 let scene;
 let controls;
 let model;
-let renderRequested;
-let composer;
+let renderRequested = false;
+// let composer;
 let width;
 let height;
 
@@ -89,10 +89,11 @@ function init() {
   createControls();
   createRenderer();
 
-  renderer.setAnimationLoop(() => {
-    update();
-    requestRenderIfNotRequested();
-  });
+  // renderer.setAnimationLoop(() => {
+  //   // update();
+  //   controls.update();
+  //   requestRenderIfNotRequested();
+  // });
 
   // composer = new EffectComposer(renderer);
   // var renderPass = new RenderPass(scene, camera);
@@ -188,6 +189,7 @@ function loadModels(modelName) {
     if (total == 2) {
       document.getElementById("loader").style.display = "none";
       document.getElementById("scene-container").style.display = "block";
+      render();
 
     } else {
       document.getElementById("scene-container").style.display = "none";
@@ -1436,8 +1438,6 @@ function createControls() {
 
 
   controls = new OrbitControls(camera, container);
-  controls.addEventListener('change', requestRenderIfNotRequested);
-
 }
 
 function update() {
@@ -1448,7 +1448,7 @@ function update() {
 
 
 function render() {
-  renderRequested = false;
+  renderRequested = undefined;
 
   renderer.render(scene, camera);
   // composer.render();
@@ -1466,6 +1466,7 @@ function requestRenderIfNotRequested() {
 init();
 
 
+
 function onWindowResize() {
   camera.aspect = container.clientWidth / container.clientHeight;
 
@@ -1474,4 +1475,4 @@ function onWindowResize() {
   renderer.setSize(container.clientWidth, container.clientHeight);
 }
 window.addEventListener("resize", onWindowResize, false);
-
+controls.addEventListener('change', requestRenderIfNotRequested);
