@@ -1496,8 +1496,8 @@ function render() {
     (cam_y < -107.7 && cam_y > -108.3) ||
     (cam_y < -167.2 && cam_y > -167.8) ||
     (cam_y < -226.2 && cam_y > -226.8) ||
-    (cam_y < -315.2 && cam_y > -315.8) ||
-    (cam_y < -365.7 && cam_y > -366.3) ||
+    (cam_y < -285.6 && cam_y > -286.2) ||
+    (cam_y < -344.6 && cam_y > -345.2) ||
     (cam_y < -403.5 && cam_y > -404.1) ||
     (cam_y < -461.5 && cam_y > -462.1) ||
     (cam_y < -521)
@@ -1567,7 +1567,7 @@ var granimInstance = new Granim({
       transitionSpeed: 1000
     },
     "state3": {
-      gradients: [['#3f5a9f', '#000000']],
+      gradients: [['#6689e3', '#000000']],
       transitionSpeed: 1000
     },
     "state4": {
