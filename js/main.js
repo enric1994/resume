@@ -74,7 +74,7 @@ function init() {
   LOWER_LIMIT = -521;
   FPS = 0;
 
-  PAN_SPEED = 40;
+  PAN_SPEED = 50;
   PAN_SPEED2 = 8;
 
   PAN_TOUCH_ROTATE = 3 / height;
