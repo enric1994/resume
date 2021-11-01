@@ -4,9 +4,32 @@ html {
 }
   html, body {margin: 0; height: 100%; overflow: hidden}
 
+.media {
+  top: 40%;
+  position: absolute;
+    display: block;
+    z-index: 265;
+    text-align: center;
+    font-size: 1.6em;
+    font-family: monospace;
+    color: black;
+    text-decoration:none;
+    left: 0;
+  right: 0;
+  line-height: 2em;
+  font-weight: bold;
+  visibility: hidden;
 
   
-  
+}
+
+a { 
+  color:black;
+  text-decoration:none;
+
+}
+
+
   #scene-container {
     width: 100vw;
     height: 100vh;
@@ -102,6 +125,7 @@ html {
     right: 0;
     bottom: 0;
     left: 0;
+    z-index: -1;
 }
 
 
@@ -109,7 +133,7 @@ html {
     position: relative;
     display: inline-block;
     border: solid 1px transparent;
-    z-index: 1;
+    z-index: -1;
     text-decoration: none;
     color: #222;
     transition: border .3s;

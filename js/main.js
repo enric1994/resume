@@ -75,7 +75,7 @@ function init() {
   FPS = 0;
 
   PAN_SPEED = 50;
-  PAN_SPEED2 = 8;
+  PAN_SPEED2 = 12;
 
   PAN_TOUCH_ROTATE = 3 / height;
   PAN_MOUSE_ROTATE = 3 / height;
@@ -1466,6 +1466,8 @@ function resizeRendererToDisplaySize(renderer) {
   return needResize;
 }
 
+var media = document.getElementsByClassName("media");
+
 function render() {
 
   renderRequested = undefined;
@@ -1481,15 +1483,12 @@ function render() {
   // composer.render();
 
   cam_y = controls.object.position.y;
-
-  if(cam_y < -315.2 && cam_y > -315.4){
-    // controls.object.position.x=-158.8720059418601;
-    // controls.object.position.y=-315.1554684359887;
-    // controls.object.position.z=1.2848439965429945;
-    // controls.target.x=-3.0367484906162887;
-    // controls.target.y=-325.5146121117345;
-    // controls.target.z=-0.442775472625598;
-    }
+  if(cam_y < -518){
+    console.log(cam_y);
+    media[0].style.visibility='visible';
+  }else{
+    media[0].style.visibility='hidden';
+  }
 
   if ((cam_y > 10) ||
     (cam_y < -49.4 && cam_y > -50.0) ||
