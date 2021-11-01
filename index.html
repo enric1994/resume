@@ -12,17 +12,18 @@
     <link rel="shortcut icon" href="favicon.png">
     <link href="css/main.css" rel="stylesheet">
     <title>Enric Moreu | 3D resume</title>
-
+    
     <script>
         fetch('https://api.countapi.xyz/hit/resume.enricmor.eu/visits')
-            .then(response => response.json())
-            .then(data => null);
-
-    </script>
+        .then(response => response.json())
+        .then(data => null);
+        
+        </script>
 
 </head>
 
-<body>
+<body class="canvas-interactive-wrapper">
+    <canvas id="canvas-interactive"></canvas>
     <div class="vertical-center" id="loader">
         <div class="lds-ellipsis">
             <div></div>
@@ -33,8 +34,8 @@
         <h2><strong>Loading</strong></h2>
     </div>
     <div id="scene-container"></div>
-
-</html>
+</body>
 <script type="module" src="js/main.js"></script>
+<script src='https://cdn.rawgit.com/sarcadass/granim.js/master/dist/granim.min.js'></script>
 
 </html>

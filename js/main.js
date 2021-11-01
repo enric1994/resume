@@ -1203,7 +1203,7 @@ function createControls() {
       // Check if touchpad is being used
       if (isTouchPad) {
         scope.keyPanSpeed = PAN_SPEED2;
-        scope.enableDamping=false;
+        scope.enableDamping = false;
         scope.update();
       } else {
         scope.keyPanSpeed = PAN_SPEED;
@@ -1482,9 +1482,8 @@ function render() {
   // composer.render();
 
   cam_y = controls.object.position.y;
-  if(
-    (cam_y > 9) || 
-    (cam_y < -49.4 && cam_y > -50) || 
+  if ((cam_y > 10) ||
+    (cam_y < -49.4 && cam_y > -50.0) ||
     (cam_y < -107.7 && cam_y > -108.3) ||
     (cam_y < -167.2 && cam_y > -167.8) ||
     (cam_y < -226.2 && cam_y > -226.8) ||
@@ -1493,11 +1492,32 @@ function render() {
     (cam_y < -403.5 && cam_y > -404.1) ||
     (cam_y < -461.5 && cam_y > -462.1) ||
     (cam_y < -521)
-    ){
+  ) {
     controls.stop();
   }
 
+
+  if (cam_y < -36 && cam_y > -93) {
+    granimInstance.changeState('state2');
+  } else if (cam_y < -94 && cam_y > -155) {
+    granimInstance.changeState('state3');
+  } else if (cam_y < -156 && cam_y > -217) {
+    granimInstance.changeState('state4');
+  } else if (cam_y < -218 && cam_y > -260) {
+    granimInstance.changeState('state5');
+  } else if (cam_y < -261 && cam_y > -354) {
+    granimInstance.changeState('state6');
+  } else if (cam_y < -355 && cam_y > -396) {
+    granimInstance.changeState('state7');
+  } else if (cam_y < -397 && cam_y > -451) {
+    granimInstance.changeState('state8');
+  } else if (cam_y < -452 && cam_y > -507) {
+    granimInstance.changeState('state9');
+  } else if (cam_y < -508) {
+    granimInstance.changeState('state10');
+  }
 }
+
 
 function requestRenderIfNotRequested() {
   if (!renderRequested) {
@@ -1512,3 +1532,61 @@ init();
 
 controls.addEventListener('change', requestRenderIfNotRequested);
 window.addEventListener('resize', requestRenderIfNotRequested);
+
+
+
+// 
+
+
+var granimInstance = new Granim({
+  element: '#canvas-interactive',
+  name: 'interactive-gradient',
+  elToSetClassOn: '.canvas-interactive-wrapper',
+  direction: 'diagonal',
+  isPausedWhenNotInView: false,
+  stateTransitionSpeed: 1000,
+  states: {
+    "default-state": {
+      gradients: [
+        ['#1fe8fe', '#336fff'],
+      ],
+      transitionSpeed: 1000
+    },
+    "state2": {
+      gradients: [['#fdff58', '#c2e3ff']],
+      transitionSpeed: 1000
+    },
+    "state3": {
+      gradients: [['#3f5a9f', '#000000']],
+      transitionSpeed: 1000
+    },
+    "state4": {
+      gradients: [['#1fe5ff', '#3f6bff']],
+      transitionSpeed: 1000
+    },
+    "state5": {
+      gradients: [['#1fe9ff', '#3fff6a']],
+      transitionSpeed: 1000
+    },
+    "state6": {
+      gradients: [['#94c9ff', '#10b0e6']],
+      transitionSpeed: 1000
+    },
+    "state7": {
+      gradients: [['#94c9ff', '#10b0e6']],
+      transitionSpeed: 1000
+    },
+    "state8": {
+      gradients: [['#fee71f', '#ff6c51']],
+      transitionSpeed: 1000
+    },
+    "state9": {
+      gradients: [['#ffffff', '#868686']],
+      transitionSpeed: 1000
+    },
+    "state10": {
+      gradients: [['#1fe8fe', '#336fff']],
+      transitionSpeed: 1000
+    },
+  }
+});
