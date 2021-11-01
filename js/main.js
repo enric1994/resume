@@ -309,7 +309,7 @@ function createControls() {
 
     // Set to false to disable panning
     this.enablePan = true;
-    this.panSpeed = 2;
+    this.panSpeed = 1.3;
     this.screenSpacePanning = true; // if false, pan orthogonal to world-space direction camera.up
     this.keyPanSpeed = PAN_SPEED;	// pixels moved per arrow key push
 
@@ -1476,12 +1476,21 @@ function render() {
     camera.updateProjectionMatrix();
   }
 
-
+  controls.update();
   renderer.render(scene, camera);
-  controls.update()
   // composer.render();
 
   cam_y = controls.object.position.y;
+
+  if(cam_y < -315.2 && cam_y > -315.4){
+    // controls.object.position.x=-158.8720059418601;
+    // controls.object.position.y=-315.1554684359887;
+    // controls.object.position.z=1.2848439965429945;
+    // controls.target.x=-3.0367484906162887;
+    // controls.target.y=-325.5146121117345;
+    // controls.target.z=-0.442775472625598;
+    }
+
   if ((cam_y > 10) ||
     (cam_y < -49.4 && cam_y > -50.0) ||
     (cam_y < -107.7 && cam_y > -108.3) ||
@@ -1496,8 +1505,9 @@ function render() {
     controls.stop();
   }
 
-
-  if (cam_y < -36 && cam_y > -93) {
+  if (cam_y < 10 && cam_y > -35) {
+    granimInstance.changeState('default-state');
+  }else if (cam_y < -36 && cam_y > -93) {
     granimInstance.changeState('state2');
   } else if (cam_y < -94 && cam_y > -155) {
     granimInstance.changeState('state3');
