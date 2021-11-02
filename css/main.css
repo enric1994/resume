@@ -1,6 +1,6 @@
 html {
-  background: rgb(31,232,254);
-  background: linear-gradient(135deg, rgba(31,232,254,1) 0%, rgba(51,111,255,1) 100%);
+  background: rgb(11,158,217);
+background: linear-gradient(135deg, rgba(11,158,217,1) 0%, rgba(7,199,242,1) 100%);
 }
   html, body {margin: 0; height: 100%; overflow: hidden}
 
@@ -11,7 +11,7 @@ html {
     z-index: 265;
     text-align: center;
     font-size: 1.6em;
-    font-family: monospace;
+    font-family: 'Courier New', Courier, monospace;
     color: black;
     text-decoration:none;
     left: 0;

@@ -1483,7 +1483,7 @@ function render() {
   // composer.render();
 
   cam_y = controls.object.position.y;
-  if(cam_y < -518){
+  if(cam_y <= -520.8){
     console.log(cam_y);
     media[0].style.visibility='visible';
   }else{
@@ -1514,11 +1514,11 @@ function render() {
     granimInstance.changeState('state4');
   } else if (cam_y < -218 && cam_y > -260) {
     granimInstance.changeState('state5');
-  } else if (cam_y < -261 && cam_y > -354) {
+  } else if (cam_y < -261 && cam_y > -299) {
     granimInstance.changeState('state6');
-  } else if (cam_y < -355 && cam_y > -396) {
+  } else if (cam_y < -300 && cam_y > -379) {
     granimInstance.changeState('state7');
-  } else if (cam_y < -397 && cam_y > -451) {
+  } else if (cam_y < -380 && cam_y > -451) {
     granimInstance.changeState('state8');
   } else if (cam_y < -452 && cam_y > -507) {
     granimInstance.changeState('state9');
@@ -1557,28 +1557,28 @@ var granimInstance = new Granim({
   states: {
     "default-state": {
       gradients: [
-        ['#1fe8fe', '#336fff'],
+        ['#0b9ed9', '#07c7f2'],
       ],
       transitionSpeed: 1000
     },
     "state2": {
-      gradients: [['#fdff58', '#c2e3ff']],
+      gradients: [['#fff680', '#ec5c47']],
       transitionSpeed: 1000
     },
     "state3": {
-      gradients: [['#6689e3', '#000000']],
+      gradients: [['#70aeed', '#000000']],
       transitionSpeed: 1000
     },
     "state4": {
-      gradients: [['#1fe5ff', '#3f6bff']],
+      gradients: [['#27b8ff', '#ff9709']],
       transitionSpeed: 1000
     },
     "state5": {
-      gradients: [['#1fe9ff', '#3fff6a']],
+      gradients: [['#3FCA4D', '#2FA7FF']],
       transitionSpeed: 1000
     },
     "state6": {
-      gradients: [['#94c9ff', '#10b0e6']],
+      gradients: [['#D98E04', '#ffffff']],
       transitionSpeed: 1000
     },
     "state7": {
@@ -1586,7 +1586,7 @@ var granimInstance = new Granim({
       transitionSpeed: 1000
     },
     "state8": {
-      gradients: [['#fee71f', '#ff6c51']],
+      gradients: [['#fff680', '#ec5c47']],
       transitionSpeed: 1000
     },
     "state9": {
