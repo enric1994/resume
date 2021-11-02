@@ -76,7 +76,7 @@ function init() {
   FPS = 0;
 
   PAN_SPEED = 50;
-  PAN_SPEED2 = 12;
+  PAN_SPEED2 = 8;
 
   PAN_TOUCH_ROTATE = 3 / height;
   PAN_MOUSE_ROTATE = 3 / height;
