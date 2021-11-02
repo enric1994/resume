@@ -1,6 +1,7 @@
 import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
 
 import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/loaders/DRACOLoader.js';
 // import { EffectComposer } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/EffectComposer.js';
 // import { RenderPass } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/postprocessing/RenderPass.js';
 // import { BokehPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/BokehPass.js';
@@ -29,7 +30,7 @@ let width;
 let height;
 let cam_y;
 
-var modelName = "gltf/model.glb";
+var modelName = "gltf/model.drc";
 const mixers = [];
 const clock = new THREE.Clock();
 
@@ -198,6 +199,9 @@ function loadModels(modelName) {
   };
 
   const loader = new GLTFLoader(manager);
+  const dracoLoader = new DRACOLoader()
+  dracoLoader.setDecoderPath('./draco/')
+  loader.setDRACOLoader(dracoLoader);
 
   const onLoad = (result) => {
     model = result.scene;
