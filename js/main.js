@@ -73,7 +73,7 @@ function init() {
 
   UPPER_LIMIT = 9;
   LOWER_LIMIT = -521;
-  FPS = 0;
+  FPS = 80;
 
   PAN_SPEED = 50;
   PAN_SPEED2 = 8;
@@ -1536,8 +1536,12 @@ function requestRenderIfNotRequested() {
   if (!renderRequested) {
     renderRequested = true;
 
-    requestAnimationFrame(render);
+      setTimeout( function() {
+  
+          requestAnimationFrame( render );
 
+      }, 1000 / FPS );
+  
   }
 }
 
