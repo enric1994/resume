@@ -35,38 +35,14 @@ const mixers = [];
 const clock = new THREE.Clock();
 
 
-// Detect touchpad or mouse
-var eventCount = 0;
-var eventCountStart;
-var isTouchPadDefined = false
-
-var mouseHandle = function (evt) {
-  isTouchPadDefined = isTouchPad || typeof isTouchPad !== "undefined";
-  if (!isTouchPadDefined) {
-    if (eventCount === 0) {
-      eventCountStart = new Date().getTime();
-    }
-
-    eventCount++;
-
-    if (new Date().getTime() - eventCountStart > 500) {
-      if (eventCount > 10) {
-        isTouchPad = true;
-      } else {
-        isTouchPad = false;
-      }
-      isTouchPadDefined = true;
-    }
-  }
-}
-
-document.addEventListener("mousewheel", mouseHandle, false);
-document.addEventListener("DOMMouseScroll", mouseHandle, false);
-
 function init() {
 
 
   container = document.querySelector("#scene-container");
+  
+
+
+
 
   width = container.clientWidth;
   height = container.clientHeight;
@@ -251,7 +227,11 @@ function createRenderer() {
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true });
   renderer.stencil = true;
   renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(2); //(window.devicePixelRatio);
+  if(window.devicePixelRatio < 2){
+    renderer.setPixelRatio(window.devicePixelRatio);
+  }else{
+    renderer.setPixelRatio(2);
+  }
   renderer.shadowMapSoft = true;
   renderer.powerPreference = "high-performance";
   renderer.setClearColor(0x000000, 0); // the default
@@ -323,10 +303,10 @@ function createControls() {
     this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
 
     // Set to false to disable use of the keys
-    this.enableKeys = false;
+    this.enableKeys = true;
 
     // The four arrow keys
-    this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
+    this.keys = { UP: 38, BOTTOM: 40 };
 
     // Mouse buttons
     this.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.PAN };
@@ -844,12 +824,20 @@ function createControls() {
       switch (event.keyCode) {
 
         case scope.keys.UP:
+          if (scope.object.position.y > UPPER_LIMIT) {
+            return
+          }
           pan(0, scope.keyPanSpeed);
+          rotateLeft(scope.keyPanSpeed * PAN_MOUSE_ROTATE);
           needsUpdate = true;
           break;
 
         case scope.keys.BOTTOM:
+          if (scope.object.position.y < LOWER_LIMIT) {
+            return
+          }
           pan(0, - scope.keyPanSpeed);
+          rotateLeft(-scope.keyPanSpeed * PAN_MOUSE_ROTATE);
           needsUpdate = true;
           break;
 
@@ -1203,17 +1191,6 @@ function createControls() {
 
     function onMouseWheel(event) {
 
-
-      // Check if touchpad is being used
-      if (isTouchPad) {
-        scope.keyPanSpeed = PAN_SPEED2;
-        scope.enableDamping = false;
-        scope.update();
-      } else {
-        scope.keyPanSpeed = PAN_SPEED;
-        scope.update();
-      }
-
       if (event.deltaY > 0) {
 
         if (scope.object.position.y < LOWER_LIMIT) {
@@ -1537,8 +1514,8 @@ function requestRenderIfNotRequested() {
     renderRequested = true;
 
       setTimeout( function() {
-  
-          requestAnimationFrame( render );
+        
+        requestAnimationFrame( render );
 
       }, 1000 / FPS );
   
@@ -1607,3 +1584,7 @@ var granimInstance = new Granim({
     },
   }
 });
+
+var textbox = document.getElementById("scene-container");
+textbox.focus();
+textbox.scrollIntoView();
