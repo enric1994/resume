@@ -1,10 +1,9 @@
-<!-- pls hire me -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="description" content="3D resume of Enric Moreu">
     <meta name="keywords" content="3D, resume, Enric Moreu">
     <meta name="author" content="Enric Moreu">
@@ -16,19 +15,33 @@
     <link rel="shortcut icon" href="favicon.png">
     <link href="css/main.css" rel="stylesheet">
     <title>Enric Moreu | 3D resume</title>
-
-    <script>
-        fetch('https://api.countapi.xyz/hit/resume.enricmor.eu/visits')
-            .then(response => response.json())
-            .then(data => null);
-
-    </script>
-
 </head>
 
-<body class="canvas-interactive-wrapper">
-    <canvas id="canvas-interactive"></canvas>
-    <div class="vertical-center" id="loader">
+<script>
+    fetch('https://api.countapi.xyz/hit/resume.enricmor.eu/visits')
+        .then(response => response.json())
+        .then(data => null);
+
+</script>
+
+<body>
+    <canvas id="gradient"></canvas>
+    <main id="scroll">
+        <header id="fixed">
+            <div id="canvas-container">
+                <canvas id="c"></canvas>
+            </div>
+        </header>
+        <article id="content">
+            <iframe src='about:blank'></iframe>
+        </article>
+    </main>
+</body>
+
+<div class="center-text">
+    <a target="_blank" id="portfolio-link" href="https://enricmor.eu">www.enricmor.eu</a>
+
+    <div id="loader">
         <div class="lds-ellipsis">
             <div></div>
             <div></div>
@@ -37,15 +50,10 @@
         </div>
         <h2><strong>Loading</strong></h2>
     </div>
+</div>
 
-    <div class="media">
-        <!-- <div><a target="_blank" href="https://twitter.com/enric_moreu">Twitter: @enric_moreu</a></div> -->
-        <div><a target="_blank" href="https://www.enricmor.eu/#contact">www.enricmor.eu</a></div>
-        <!-- <div><a target="_blank" href="mailto:hi@enricmor.eu">hi@enricmor.eu</a></div> -->
-    </div>
-    <div id="scene-container"></div>
-</body>
+<script src="js/lib/granim.min.js"></script>
+<script src="js/lib/smooth-scrollbar.js"></script>
 <script type="module" src="js/main.js"></script>
-<script src='https://cdn.rawgit.com/sarcadass/granim.js/master/dist/granim.min.js'></script>
 
 </html>
