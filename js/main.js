@@ -17,7 +17,6 @@ import { update_controls } from './control.js'
 // document.body.appendChild(stats.dom)
 
 var MODEL_SCALE = 5;
-var FPS = 120;
 
 var myscrollbar = get_scrollbar()
 
@@ -66,9 +65,7 @@ function main() {
         var delta = clock.getDelta();
         if (mixer) mixer.update(delta);
         renderer.render(scene, camera);
-        setTimeout(function () {
-            requestAnimationFrame(render);
-        }, 1000 / FPS);
+        requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
 
