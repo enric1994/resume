@@ -3,57 +3,379 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="3D resume of Enric Moreu">
     <meta name="keywords" content="3D, resume, Enric Moreu">
     <meta name="author" content="Enric Moreu">
     <meta name="theme-color" content="black">
     <meta property='og:title' content='Enric Moreu | 3D resume' />
-    <meta property='og:image' content='https://github.com/enric1994/resume/raw/master/preview.png' />
     <meta property='og:description' content='3D resume of Enric Moreu' />
+    <meta property='og:image' content='https://github.com/enric1994/resume/raw/master/preview.png' />
     <meta property='og:url' content='https://resume.enricmor.eu' />
     <link rel="shortcut icon" href="favicon.png">
-    <link href="css/main.css" rel="stylesheet">
+
+    <script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.8.3/dist/es-module-shims.min.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.min.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+        }
+      }
+    </script>
+
     <title>Enric Moreu | 3D resume</title>
+    <style>
+        html {
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(to bottom, #0b9ed9, #07c7f2);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #footer-text {
+            width: 100%;
+            text-align: center;
+            position: absolute;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+            font-size: 4vmin;
+            display: none;
+        }
+
+        a {
+            font-weight: bold;
+            color: black;
+            font-family: 'Courier New', Courier, monospace;
+            text-decoration: none;
+        }
+    </style>
 </head>
 
-<script>
-    fetch('https://api.countapi.xyz/hit/resume.enricmor.eu/visits')
-        .then(response => response.json())
-        .then(data => null);
-
-</script>
-
 <body>
-    <canvas id="gradient"></canvas>
-    <main id="scroll">
-        <header id="fixed">
-            <div id="canvas-container">
-                <canvas id="c"></canvas>
-            </div>
-        </header>
-        <article id="content">
-            <iframe src='about:blank'></iframe>
-        </article>
-    </main>
+    <script type="module">
+        import * as THREE from "three";
+        import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+        import { DRACOLoader } from "three/addons/loaders/DRACOLoader.min.js";
+
+        // Constants
+        const SPEED_CAP = 30;
+        const SCROLL_FACTOR = 0.003;
+        const SCROLL_DAMPING_FACTOR = 0.9;
+        const SCROLL_INERTIA_THRESHOLD = 0.001;
+        const SCROLL_INERTIA_CAP = 0.1;
+        const TOUCH_INERTIA_DECAY = 0.97;
+        const TOUCH_INERTIA_FACTOR = 0.003;
+        const TOUCH_INERTIA_CAP = 0.01;
+        const KEY_INERTIA_FACTOR = 0.005;
+        const KEY_INERTIA_DECAY = 0.99;
+        const KEY_SPEED_DECAY = 0.1;
+        const KEY_SPEED = 6;
+        const KEY_INERTIA_CAP = 0.001;
+        const KEY_INTERVAL = 10;
+        const FOV = 45;
+        const MAX_SCALE = 50000;
+        const MIN_SCALE = 0.001;
+        const LOCK_SCALE = 1;
+        const LOCK_SCALE_END = 630;
+        const MODEL_SCALE = 100
+        const MODEL_SCALE_RESTART = 0.5
+        const modelNames = [
+            'title.glb',
+            'city.glb',
+            'languages.glb',
+            'uni.glb',
+            'phd.glb',
+            'home.glb',
+            'experience.glb',
+            'tc.glb',
+            'devops.glb',
+            'safari.glb',
+            'candle.glb'
+        ];
+
+        // Variables
+        let models = [];
+        let scrollIntensity = 0;
+        let isScrolling = false;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let inertia = 0;
+        let keyInertia = 0;
+        let keyInterval;
+        let scrollDirection = 0;
+
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(FOV, window.innerWidth / window.innerHeight, 0.1, 1000000000);
+        const clock = new THREE.Clock();
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true });
+        const loader = new GLTFLoader();
+        const dracoLoader = new DRACOLoader()
+        dracoLoader.setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/libs/draco/")
+        dracoLoader.setDecoderConfig({ type: 'js' });
+        dracoLoader.preload();
+        loader.setDRACOLoader(dracoLoader);
+
+        // Renderer settings
+        renderer.setPixelRatio(window.devicePixelRatio < 1.5 ? window.devicePixelRatio : 2);
+        renderer.shadowMap.enabled = true;
+        renderer.powerPreference = "high-performance";
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Lighting setup
+        const lights = [
+            new THREE.AmbientLight('white', 0.75),
+            new THREE.HemisphereLight('white', 'orange', 1),
+            new THREE.DirectionalLight('white', 1),
+            new THREE.DirectionalLight('white', 1),
+            new THREE.DirectionalLight('white', 1),
+            new THREE.DirectionalLight('white', 1),
+            new THREE.DirectionalLight('white', 0.7),
+            new THREE.DirectionalLight(0xffffff, 1.0)
+        ];
+
+        lights[2].position.set(10, 10, 10);
+        lights[3].position.set(-10, 10, 10);
+        lights[4].position.set(-10, 10, -10);
+        lights[5].position.set(10, 10, -10);
+        lights[6].position.set(-10, 10, -5);
+        lights[7].position.set(0.1, 1.5, 0.1);
+
+        lights[7].castShadow = true;
+        lights[7].shadow.mapSize.width = 5000;
+        lights[7].shadow.mapSize.height = 5000;
+        lights[7].shadow.camera.near = 1;
+        lights[7].shadow.camera.far = 50;
+        lights[7].shadow.camera.top = 50;
+        lights[7].shadow.camera.bottom = -50;
+        lights[7].shadow.camera.left = -50;
+        lights[7].shadow.camera.right = 50;
+        lights.forEach(light => scene.add(light));
+
+        // Function to load models
+        async function loadModel(modelName, scale) {
+            return new Promise((resolve, reject) => {
+                loader.load(modelName, (gltf) => {
+                    const model = gltf.scene;
+                    model.scale.set(scale, scale, scale);
+                    model.castShadow = true;
+                    model.traverse(node => {
+                        if (node instanceof THREE.Mesh) {
+                            node.castShadow = true;
+                            node.receiveShadow = true;
+                            node.material = new THREE.MeshPhongMaterial({ color: node.material.color });
+                        }
+                    });
+                    scene.add(model);
+                    if (gltf.animations.length) {
+                        const mixer = new THREE.AnimationMixer(model);
+                        gltf.animations.forEach(clip => mixer.clipAction(clip).play());
+                        model.mixer = mixer;
+                    }
+                    resolve(model);
+                }, undefined, reject);
+            });
+        }
+
+        // Load all models
+        async function loadModels() {
+            models.push(await loadModel('models/' + modelNames[0], 1));
+            updateCameraPath();
+
+            for (let i = 1; i < modelNames.length; i++) {
+                models.push(await loadModel('models/' + modelNames[i], models[0].scale.x / (MODEL_SCALE ** i)));
+                await new Promise(r => setTimeout(r, 2000));
+            }
+            // Re-scale all models after loading them
+            let rescale;
+            for (let i = 0; i < models.length; i++) {
+                    rescale = models[0].scale.x / (MODEL_SCALE ** i);
+                    models[i].scale.set(rescale, rescale, rescale);
+                }
+        }
+        loadModels();
+
+        // Function to update camera path
+        function updateCameraPath() {
+            camera.position.set(
+                15 * Math.sin(0.2 * Math.log2(models[0].scale.x)),
+                1 + 1 * Math.sin(0.3 * Math.log2(models[0].scale.x)),
+                -5 + 15 * Math.cos(0.1 * Math.log2(models[0].scale.x))
+            );
+            camera.lookAt(0, 0, 0);
+        }
+
+        // Function to scale models
+        async function scaleModels(scrollIntensity) {
+
+            let newScale;
+
+            for (let i = 0; i < models.length; i++) {
+                // Hide models when not in sight
+                if (models[i].scale.x >= MAX_SCALE || models[i].scale.x < MIN_SCALE) {
+                    models[i].visible = false
+                } else {
+                    models[i].visible = true
+                }
+
+                // Scale models
+                newScale = models[i].scale.x + scrollIntensity * models[i].scale.x;
+                models[i].scale.set(newScale, newScale, newScale);
+
+            }
+
+            // Reset loop at the end
+            if (models[models.length - 1].scale.x > LOCK_SCALE_END) {
+                for (let i = 0; i < models.length; i++) {
+                    newScale = MODEL_SCALE_RESTART / MODEL_SCALE ** i
+                    models[i].scale.set(newScale, newScale, newScale);
+                }
+                document.getElementById('footer-text').style.display = 'block';
+            }
+
+        }
+
+        // Scroll controls
+        function applyScrollInertia() {
+            scrollIntensity = Math.min(SCROLL_INERTIA_CAP, Math.max(-SCROLL_INERTIA_CAP, scrollIntensity));
+            if (Math.abs(scrollIntensity) > SCROLL_INERTIA_THRESHOLD) {
+                const lockSaleCondition = (models[0].scale.x > LOCK_SCALE && scrollIntensity < 0) ||
+                    (models[models.length - 1].scale.x < LOCK_SCALE_END && scrollIntensity > 0);
+
+                if (lockSaleCondition) {
+                    scaleModels(scrollIntensity);
+                    updateCameraPath();
+                }
+                scrollIntensity *= SCROLL_DAMPING_FACTOR;
+                requestAnimationFrame(applyScrollInertia);
+            } else {
+                isScrolling = false;
+            }
+        }
+
+        window.addEventListener('wheel', event => {
+            if (scrollDirection === 0) scrollDirection = event.deltaY > 0 ? 1 : -1;
+            const deltaYcapped = Math.min(SPEED_CAP, Math.max(-SPEED_CAP, event.deltaY * scrollDirection));
+            scrollIntensity += deltaYcapped * SCROLL_FACTOR;
+            if (!isScrolling) {
+                isScrolling = true;
+                requestAnimationFrame(applyScrollInertia);
+            }
+        });
+
+        // Touch controls
+        window.addEventListener('touchstart', event => {
+            touchStartX = event.touches[0].clientX;
+            touchStartY = event.touches[0].clientY;
+            inertia = 0;
+        });
+
+        window.addEventListener('touchmove', event => {
+            const touchX = event.touches[0].clientX;
+            const touchY = event.touches[0].clientY;
+            const deltaYcapped = Math.min(SPEED_CAP, Math.max(-SPEED_CAP, touchY - touchStartY));
+            const scrollIntensity = -deltaYcapped * TOUCH_INERTIA_FACTOR;
+            const lockSaleCondition = (models[0].scale.x > LOCK_SCALE && scrollIntensity < 0) ||
+                (models[models.length - 1].scale.x < LOCK_SCALE_END && scrollIntensity > 0);
+
+            if (lockSaleCondition) {
+                scaleModels(scrollIntensity);
+                updateCameraPath();
+                inertia = deltaYcapped;
+                touchStartX = touchX;
+                touchStartY = touchY;
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            function inertiaLoop() {
+                if (Math.abs(inertia) > TOUCH_INERTIA_CAP) {
+                    const scrollIntensity = -inertia * TOUCH_INERTIA_FACTOR;
+                    const lockSaleCondition = (models[0].scale.x > LOCK_SCALE && scrollIntensity < 0) ||
+                        (models[models.length - 1].scale.x < LOCK_SCALE_END && scrollIntensity > 0);
+
+                    if (lockSaleCondition) {
+                        scaleModels(scrollIntensity);
+                        updateCameraPath();
+                        inertia *= TOUCH_INERTIA_DECAY;
+                        requestAnimationFrame(inertiaLoop);
+                    }
+                }
+            }
+            inertiaLoop();
+        });
+
+        // Key controls
+        function handleKeyInertia() {
+            if (Math.abs(keyInertia) > KEY_INERTIA_CAP) {
+                const scrollIntensity = keyInertia * KEY_INERTIA_FACTOR;
+                const lockSaleCondition = (models[0].scale.x > LOCK_SCALE && scrollIntensity < 0) ||
+                    (models[models.length - 1].scale.x < LOCK_SCALE_END && scrollIntensity > 0);
+
+                if (lockSaleCondition) {
+                    scaleModels(scrollIntensity);
+                    updateCameraPath();
+                    keyInertia *= KEY_INERTIA_DECAY;
+                } else {
+                    clearInterval(keyInterval);
+                }
+            } else {
+                clearInterval(keyInterval);
+            }
+        }
+
+        window.addEventListener('keydown', event => {
+            if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                clearInterval(keyInterval);
+                keyInertia = event.key === 'ArrowUp' ? -KEY_SPEED : KEY_SPEED;
+                keyInterval = setInterval(handleKeyInertia, KEY_INTERVAL);
+            }
+        });
+
+        window.addEventListener('keyup', event => {
+            if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                keyInertia *= KEY_SPEED_DECAY;
+            }
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            for (let i = 0; i < models.length; i++) {
+                if (models[i].mixer && models[i].visible) {
+                    models[i].mixer.update(delta);
+                }
+            }
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
 </body>
 
-<div class="center-text">
-    <a target="_blank" id="portfolio-link" href="https://enricmor.eu">www.enricmor.eu</a>
-
-    <div id="loader">
-        <div class="lds-ellipsis">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-        <h2><strong>Loading</strong></h2>
-    </div>
+<div id="footer-text">
+    <a target="_blank" href="https://www.linkedin.com/in/enricmf/">LinkedIn</a> | <a target="_blank"
+        href="https://www.github.com/enric1994/">GitHub</a> | <a target="_blank" href="https://enricmor.eu/">Website</a>
 </div>
-
-<script src="js/lib/granim.min.js"></script>
-<script src="js/lib/smooth-scrollbar.js"></script>
-<script type="module" src="js/main.js"></script>
 
 </html>
