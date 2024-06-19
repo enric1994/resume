@@ -197,7 +197,6 @@
 
             for (let i = 1; i < modelNames.length; i++) {
                 models.push(await loadModel('models/' + modelNames[i], models[0].scale.x / (MODEL_SCALE ** i)));
-                await new Promise(r => setTimeout(r, 2000));
             }
             // Re-scale all models after loading them
             let rescale;
