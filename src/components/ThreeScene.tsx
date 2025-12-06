@@ -97,7 +97,7 @@ export default function ThreeScene({ onShowFooter, onError }: ThreeSceneProps) {
         loader.setDRACOLoader(dracoLoader);
 
         // Renderer settings
-        renderer.setPixelRatio(window.devicePixelRatio < 1.5 ? window.devicePixelRatio : 2);
+        renderer.setPixelRatio(1); // window.devicePixelRatio < 1.5 ? window.devicePixelRatio : 2);
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.setSize(window.innerWidth, window.innerHeight);
