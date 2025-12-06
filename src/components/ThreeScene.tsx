@@ -63,6 +63,10 @@ export default function ThreeScene({ onShowFooter, onError }: ThreeSceneProps) {
     useEffect(() => {
         if (!containerRef.current) return;
 
+        // Detect if device is low-powered (mobile/tablet)
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isLowPower = isMobile || window.innerWidth < 1024;
+
         // Variables
         let models: THREE.Group[] = [];
         let scrollIntensity = 0;
@@ -86,9 +90,10 @@ export default function ThreeScene({ onShowFooter, onError }: ThreeSceneProps) {
         );
         const clock = new THREE.Clock();
         const renderer = new THREE.WebGLRenderer({
-            antialias: true,
+            antialias: !isLowPower, // Disable antialiasing on mobile
             alpha: true,
-            logarithmicDepthBuffer: true
+            logarithmicDepthBuffer: true,
+            powerPreference: isLowPower ? 'low-power' : 'high-performance'
         });
         const loader = new GLTFLoader();
         const dracoLoader = new DRACOLoader();
@@ -97,43 +102,58 @@ export default function ThreeScene({ onShowFooter, onError }: ThreeSceneProps) {
         loader.setDRACOLoader(dracoLoader);
 
         // Renderer settings
-        renderer.setPixelRatio(window.devicePixelRatio < 1.5 ? window.devicePixelRatio : 2);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setPixelRatio(1);
+        renderer.shadowMap.enabled = !isLowPower; // Disable shadows on mobile
+        renderer.shadowMap.type = isLowPower ? THREE.BasicShadowMap : THREE.PCFShadowMap;
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         containerRef.current.appendChild(renderer.domElement);
 
-        // Lighting setup
-        const lights = [
-            new THREE.AmbientLight('white', 0.75),
-            new THREE.HemisphereLight('white', 'orange', 1),
-            new THREE.DirectionalLight('white', 1),
-            new THREE.DirectionalLight('white', 1),
-            new THREE.DirectionalLight('white', 1),
-            new THREE.DirectionalLight('white', 1),
-            new THREE.DirectionalLight('white', 0.7),
-            new THREE.DirectionalLight(0xffffff, 1.0)
+        // Lighting setup - reduced for mobile
+        const lights: THREE.Light[] = [
+            new THREE.AmbientLight('white', isLowPower ? 1.2 : 0.75),
+            new THREE.HemisphereLight('white', 'orange', isLowPower ? 1.5 : 1),
         ];
 
-        lights[2].position.set(10, 10, 10);
-        lights[3].position.set(-10, 10, 10);
-        lights[4].position.set(-10, 10, -10);
-        lights[5].position.set(10, 10, -10);
-        lights[6].position.set(-10, 10, -5);
-        lights[7].position.set(0.1, 1.5, 0.1);
+        // Only add extra directional lights on desktop
+        if (!isLowPower) {
+            const dirLights = [
+                new THREE.DirectionalLight('white', 1),
+                new THREE.DirectionalLight('white', 1),
+                new THREE.DirectionalLight('white', 1),
+                new THREE.DirectionalLight('white', 1),
+                new THREE.DirectionalLight('white', 0.7),
+                new THREE.DirectionalLight(0xffffff, 1.0)
+            ];
+            dirLights[0].position.set(10, 10, 10);
+            dirLights[1].position.set(-10, 10, 10);
+            dirLights[2].position.set(-10, 10, -10);
+            dirLights[3].position.set(10, 10, -10);
+            dirLights[4].position.set(-10, 10, -5);
+            dirLights[5].position.set(0.1, 1.5, 0.1);
 
-        // Configure shadow-casting light
-        const shadowLight = lights[7] as THREE.DirectionalLight;
-        shadowLight.castShadow = true;
-        shadowLight.shadow.mapSize.width = 5000;
-        shadowLight.shadow.mapSize.height = 5000;
-        shadowLight.shadow.camera.near = 1;
-        shadowLight.shadow.camera.far = 50;
-        shadowLight.shadow.camera.top = 50;
-        shadowLight.shadow.camera.bottom = -50;
-        shadowLight.shadow.camera.left = -50;
-        shadowLight.shadow.camera.right = 50;
+            // Configure shadow-casting light
+            const shadowLight = dirLights[5];
+            shadowLight.castShadow = true;
+            shadowLight.shadow.mapSize.width = 2048;
+            shadowLight.shadow.mapSize.height = 2048;
+            shadowLight.shadow.camera.near = 1;
+            shadowLight.shadow.camera.far = 50;
+            shadowLight.shadow.camera.top = 50;
+            shadowLight.shadow.camera.bottom = -50;
+            shadowLight.shadow.camera.left = -50;
+            shadowLight.shadow.camera.right = 50;
+            
+            lights.push(...dirLights);
+        } else {
+            // Mobile: just 2 directional lights, no shadows
+            const dirLight1 = new THREE.DirectionalLight('white', 1.2);
+            dirLight1.position.set(5, 10, 5);
+            const dirLight2 = new THREE.DirectionalLight('white', 0.8);
+            dirLight2.position.set(-5, 10, -5);
+            lights.push(dirLight1, dirLight2);
+        }
+
         lights.forEach(light => scene.add(light));
 
         // Function to load models
@@ -144,14 +164,21 @@ export default function ThreeScene({ onShowFooter, onError }: ThreeSceneProps) {
                     (gltf) => {
                         const model = gltf.scene;
                         model.scale.set(scale, scale, scale);
-                        model.castShadow = true;
+                        model.castShadow = !isLowPower;
                         model.traverse(node => {
                             if (node instanceof THREE.Mesh) {
-                                node.castShadow = true;
-                                node.receiveShadow = true;
-                                node.material = new THREE.MeshPhongMaterial({ 
-                                    color: node.material.color 
-                                });
+                                node.castShadow = !isLowPower;
+                                node.receiveShadow = !isLowPower;
+                                // Use simpler material on mobile
+                                if (isLowPower) {
+                                    node.material = new THREE.MeshLambertMaterial({ 
+                                        color: node.material.color 
+                                    });
+                                } else {
+                                    node.material = new THREE.MeshPhongMaterial({ 
+                                        color: node.material.color 
+                                    });
+                                }
                             }
                         });
                         scene.add(model);
